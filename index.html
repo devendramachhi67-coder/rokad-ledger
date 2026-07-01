@@ -73,14 +73,14 @@
     </div>
   </div>
 
-  <div class="toolbar">
-    <button class="btn-new" onclick="resetForm()">New Entry</button>
-    <button class="btn-party" onclick="showPartyLedger()">Party Ledger</button>
-    <button class="btn-report" onclick="showFullReport()">Full Report</button>
-    <button class="btn-excel" onclick="exportExcel()">Excel</button>
-    <button class="btn-backup" onclick="backupData()">Backup Now</button>
-    <button class="btn-restore" onclick="restoreData()">Data Restore</button>
-  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+  <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="resetForm()">New Entry</button>
+  <button style="background:#8b5cf6;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="alert('Party Ledger')">Party Ledger</button>
+  <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="alert('Report')">Full Report</button>
+  <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="exportExcel()">Excel</button>
+  <button style="background:#059669;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="backupData()">Backup Now</button>
+  <button style="background:#ea580c;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="restoreData()">Data Restore</button>
+</div>
 
   <div class="filters">
     <input type="date" id="filterDate1">
