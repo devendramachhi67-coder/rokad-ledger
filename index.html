@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e293b">
   <link rel="icon" href="icon-192.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -295,81 +295,92 @@ function exportExcel() {
   a.href = url; a.download = 'RokadLedger.csv'; a.click();
 }
 
-async function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('l', 'mm', 'a4');
-  
-  // ગુજરાતી ફોન્ટ લોડ કર
-  const fontUrl = 'https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoSansGujarati/NotoSansGujarati-Regular.ttf';
-  const font = await fetch(fontUrl).then(res => res.arrayBuffer());
-  doc.addFileToVFS('NotoSansGujarati-Regular.ttf', btoa(String.fromCharCode(...new Uint8Array(font))));
-  doc.addFont('NotoSansGujarati-Regular.ttf', 'NotoSansGujarati', 'normal');
-  doc.setFont('NotoSansGujarati');
-  
+function exportPDF() {
   let filtered = getFilteredData();
   
-  doc.setFontSize(18);
-  doc.text('ROKAD & GPAY LEDGER', 148, 15, { align: 'center' });
-  
-  doc.setFontSize(10);
-  doc.text(`Date: ${formatDate(new Date().toISOString().split('T')[0])}`, 15, 22);
-  doc.text(`Total Entries: ${filtered.length}`, 260, 22, { align: 'right' });
-  
   let ra=0, rj=0, ga=0, gj=0;
-  const tableData = filtered.map((d, i) => {
+  filtered.forEach(d => {
     if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
     else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
-    
-    return [
-      i+1, 
-      formatDate(d.date), 
-      d.type, 
-      d.aavakjavak, 
-      d.vehicleType,
-      d.rokadAmount.toFixed(2),
-      d.gpayAmount.toFixed(2),
-      d.amount.toFixed(2), 
-      d.party, 
-      d.details
-    ];
+  });
+  
+  // HTML ટેબલ બનાવ
+  let html = `
+    <div style="font-family: Arial, sans-serif; padding: 20px;">
+      <h2 style="text-align:center;margin:0 0 10px 0;">ROKAD & GPAY LEDGER</h2>
+      <p style="text-align:right;font-size:12px;margin:0 0 10px 0;">
+        Date: ${formatDate(new Date().toISOString().split('T')[0])} | Total Entries: ${filtered.length}
+      </p>
+      <table style="width:100%;border-collapse:collapse;font-size:10px;">
+        <thead>
+          <tr style="background:#334155;color:white;">
+            <th style="border:1px solid #333;padding:4px;">Sr</th>
+            <th style="border:1px solid #333;padding:4px;">Date</th>
+            <th style="border:1px solid #333;padding:4px;">Type</th>
+            <th style="border:1px solid #333;padding:4px;">A/J</th>
+            <th style="border:1px solid #333;padding:4px;">Vehicle</th>
+            <th style="border:1px solid #333;padding:4px;">Rokad</th>
+            <th style="border:1px solid #333;padding:4px;">GPay</th>
+            <th style="border:1px solid #333;padding:4px;">Total</th>
+            <th style="border:1px solid #333;padding:4px;">Party</th>
+            <th style="border:1px solid #333;padding:4px;">Details</th>
+          </tr>
+        </thead>
+        <tbody>`;
+  
+  filtered.forEach((d, i) => {
+    html += `
+      <tr>
+        <td style="border:1px solid #333;padding:4px;">${i+1}</td>
+        <td style="border:1px solid #333;padding:4px;">${formatDate(d.date)}</td>
+        <td style="border:1px solid #333;padding:4px;">${d.type}</td>
+        <td style="border:1px solid #333;padding:4px;">${d.aavakjavak}</td>
+        <td style="border:1px solid #333;padding:4px;">${d.vehicleType}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${d.rokadAmount.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${d.gpayAmount.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${d.amount.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;">${d.party}</td>
+        <td style="border:1px solid #333;padding:4px;">${d.details}</td>
+      </tr>`;
   });
   
   // નીચે 3 ટોટલ રો
-  tableData.push(['', '', '', '', 'TOTAL AAVAK', ra.toFixed(2), ga.toFixed(2), (ra+ga).toFixed(2), '', '']);
-  tableData.push(['', '', '', '', 'TOTAL JAVAK', rj.toFixed(2), gj.toFixed(2), (rj+gj).toFixed(2), '', '']);
-  tableData.push(['', '', '', '', 'FINAL BALANCE', (ra-rj).toFixed(2), (ga-gj).toFixed(2), (ra-rj+ga-gj).toFixed(2), '', '']);
+  html += `
+      <tr style="background:#f1f5f9;font-weight:bold;">
+        <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">TOTAL AAVAK</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${ra.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${ga.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ra+ga).toFixed(2)}</td>
+        <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
+      </tr>
+      <tr style="background:#f1f5f9;font-weight:bold;">
+        <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">TOTAL JAVAK</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${rj.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${gj.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(rj+gj).toFixed(2)}</td>
+        <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
+      </tr>
+      <tr style="background:#d1fae5;font-weight:bold;color:#059669;">
+        <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">FINAL BALANCE</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ra-rj).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ga-gj).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ra-rj+ga-gj).toFixed(2)}</td>
+        <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
+      </tr>
+    </tbody></table></div>`;
   
-  doc.autoTable({
-    head: [['Sr', 'Date', 'Type', 'A/J', 'Vehicle', 'Rokad', 'GPay', 'Total', 'Party', 'Details']],
-    body: tableData,
-    startY: 28,
-    styles: { fontSize: 8, cellPadding: 2, font: 'NotoSansGujarati' },
-    headStyles: { fillColor: [51, 65, 85], textColor: 255, fontStyle: 'bold' },
-    columnStyles: {
-      0: { cellWidth: 10 },
-      1: { cellWidth: 18 },
-      2: { cellWidth: 15 },
-      3: { cellWidth: 15 },
-      4: { cellWidth: 25 },
-      5: { cellWidth: 20, halign: 'right' },
-      6: { cellWidth: 20, halign: 'right' },
-      7: { cellWidth: 20, halign: 'right' },
-      8: { cellWidth: 40 },
-      9: { cellWidth: 'auto' }
-    },
-    didParseCell: function(data) {
-      if (data.row.index >= tableData.length - 3) {
-        data.cell.styles.fontStyle = 'bold';
-        data.cell.styles.fillColor = [241, 245, 249];
-        if (data.row.index === tableData.length - 1) {
-          data.cell.styles.fillColor = [209, 250, 229];
-          data.cell.styles.textColor = [5, 150, 105];
-        }
-      }
-    }
-  });
+  // PDF બનાવ
+  const opt = {
+    margin: 5,
+    filename: 'RokadLedger.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+  };
   
-  doc.save('RokadLedger.pdf');
+  html2pdf().from(html).set(opt).save();
+}
+    
 }
 
 function backupData() {
