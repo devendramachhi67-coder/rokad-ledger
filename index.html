@@ -1,424 +1,284 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#2c3e50">
-<title>Rokad GPay Ledger</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<style>
-body { font-family: Arial; padding: 10px; background: #f0f0f0; margin: 0; }
-h2 { color: #2c3e50; text-align: center; margin: 8px 0; font-size: 18px; }
-.main-container { display: flex; gap: 10px; flex-direction: column; }
-.form-box,.list-box { background: white; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.toolbar { margin: 8px 0; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; background: white; padding: 8px; border-radius: 8px; }
-button { padding: 8px 12px; background: #3498db; color: white; border: none; cursor: pointer; font-size: 12px; border-radius: 5px; }
-button:active { transform: scale(0.95); }
-.success { background: #27ae60; }
-.danger { background: #e74c3c; }
-.excel { background: #16a085; }
-.warning { background: #f39c12; }
-.report { background: #8e44ad; }
-.preview { background: #1abc9c; }
-.restore { background: #e67e22; }
-.edit-btn { background: #f39c12; padding: 3px 6px; font-size: 10px; margin: 0 1px; }
-.del-btn { background: #e74c3c; padding: 3px 6px; font-size: 10px; margin: 0 1px; }
-select,input[type=date],input[type=text],input[type=number] { padding: 6px; font-size: 14px; border: 2px solid #bdc3c7; border-radius: 4px; width: 100%; box-sizing: border-box; }
-.field { margin-bottom: 10px; }
-.field label { display: block; font-weight: bold; margin-bottom: 3px; color: #34495e; font-size: 12px; }
-.search-box { width: 150px; background: #fff8e1; border: 2px solid #ffc107; }
-.balance-box { display: flex; gap: 8px; margin-bottom: 8px; }
-.balance-card { flex: 1; padding: 8px; border-radius: 6px; text-align: center; color: white; }
-.rokad-bal { background: #e67e22; }
-.gpay-bal { background: #9b59b6; }
-.total-bal { background: #27ae60; }
-.balance-card h3 { margin: 0; font-size: 11px; }
-.balance-card p { margin: 2px 0 0 0; font-size: 16px; font-weight: bold; }
-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-td, th { border: 1px solid #ccc; padding: 5px; text-align: left; }
-th { background: #34495e; color: white; position: sticky; top: 0; }
-#tableBody tr.edit-mode { background: #fef5e7; border: 2px solid #f39c12; }
-.aavak { color: #27ae60; font-weight: bold; }
-.javak { color: #e74c3c; font-weight: bold; }
-.auto-msg { color: #27ae60; font-size: 11px; text-align: center; margin-top: 4px; display:none; }
-.edit-banner { background: #f39c12; color: white; padding: 6px; text-align: center; border-radius: 4px; margin-bottom: 8px; display: none; font-weight:bold; font-size: 12px; }
-.search-info { font-size: 11px; color: #555; margin-left: 4px; }
-.install-btn { background: #2ecc71; display: none; }
-#restoreFile { display: none; }
-.sync-status { font-size: 10px; color: #7f8c8d; margin-left: auto; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROKAD & GPAY LEDGER</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
+  <link rel="icon" href="icon-192.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
+   .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+   .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+   .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+   .rokad { background: #ea580c; }
+   .gpay { background: #7c3aed; }
+   .total { background: #059669; }
+   .card.label { font-size: 11px; opacity: 0.9; }
+   .card.amount { font-size: 16px; margin-top: 4px; }
+    
+   .toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+   .toolbar button,.toolbar input,.toolbar select { 
+      padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; 
+      background: white; cursor: pointer;
+    }
+   .toolbar button { color: white; border: none; font-weight: 600; }
+   .btn-new { background: #f97316; }
+   .btn-party { background: #8b5cf6; }
+   .btn-report { background: #06b6d4; }
+   .btn-excel { background: #10b981; }
+   .btn-backup { background: #059669; }
+   .btn-restore { background: #ea580c; }
+    
+   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
+    
+   .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+   .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+    label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+   .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; 
+      font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
+    
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
+    th { background: #334155; color: white; font-size: 10px; }
+   .search-box { width: 100%; margin-bottom: 8px; padding: 6px; }
+   .table-wrap { max-height: 400px; overflow: auto; }
+   .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; }
+   .edit { background: #3b82f6; color: white; }
+   .del { background: #ef4444; color: white; }
+  </style>
 </head>
 <body>
-<h2>ROKAD & GPAY LEDGER</h2>
-<div class="balance-box">
-    <div class="balance-card rokad-bal">
-        <h3>ROKAD</h3>
-        <p>₹ <span id="rokadBalance">0.00</span></p>
+  <div class="header">ROKAD & GPAY LEDGER</div>
+  
+  <div class="totals">
+    <div class="card rokad">
+      <div class="label">ROKAD</div>
+      <div class="amount" id="rokadTotal">₹ 0</div>
     </div>
-    <div class="balance-card gpay-bal">
-        <h3>GPAY</h3>
-        <p>₹ <span id="gpayBalance">0.00</span></p>
+    <div class="card gpay">
+      <div class="label">GPAY</div>
+      <div class="amount" id="gpayTotal">₹ 0</div>
     </div>
-    <div class="balance-card total-bal">
-        <h3>TOTAL</h3>
-        <p>₹ <span id="totalBalance">0.00</span></p>
+    <div class="card total">
+      <div class="label">TOTAL</div>
+      <div class="amount" id="grandTotal">₹ 0</div>
     </div>
-</div>
-<div class="toolbar">
-    <button onclick="clearForm()" class="warning" id="newBtn">New</button>
-    <button onclick="exportExcel()" class="excel">Excel</button>
-    <button onclick="backupToDrive()" class="success">Drive Backup</button>
-    <button onclick="document.getElementById('restoreFile').click()" class="restore">Restore</button>
-    <input type="file" id="restoreFile" accept=".json" onchange="restoreData(event)">
-    <button id="installBtn" class="install-btn">Install App</button>
-    <span id="autoMsg" class="auto-msg">✓ Saved</span>
-    <span class="sync-status" id="syncStatus">Offline</span>
-</div>
-<div class="main-container">
-    <div class="form-box">
-        <div class="edit-banner" id="editBanner">EDIT MODE - Sr: <span id="editSrNo"></span></div>
-        <div class="field"><label>Date</label><input type="date" id="date"></div>
-        <div class="field">
-            <label>Type</label>
-            <select id="type" onchange="toggleDualAmount()">
-                <option value="Rokad">Rokad</option>
-                <option value="GPay">GPay</option>
-                <option value="Bane">Bane</option>
-            </select>
-        </div>
-        <div class="field">
-            <label>Aavak/Javak</label>
-            <select id="aavakjavak">
-                <option value="Aavak">Aavak</option>
-                <option value="Javak">Javak</option>
-            </select>
-        </div>
-        <div class="field">
-            <label>Vehicle</label>
-            <input type="text" id="vehicleType" list="vehicleList" placeholder="Tractor, JCB, Any">
-            <datalist id="vehicleList"></datalist>
-        </div>
-        <div class="field" id="singleAmount">
-            <label>Amount ₹</label>
-            <input type="number" step="0.01" id="amount">
-        </div>
-        <div class="field" id="dualAmount" style="display:none;">
-            <label>Rokad + GPay</label>
-            <div style="display:flex; gap:8px;">
-                <input type="number" step="0.01" id="rokadAmount" placeholder="Rokad" oninput="calcTotal()">
-                <input type="number" step="0.01" id="gpayAmount" placeholder="GPay" oninput="calcTotal()">
-            </div>
-            <b>Total: ₹ <span id="totalDual">0.00</span></b>
-        </div>
-        <div class="field"><label>Party Name</label><input type="text" id="party"></div>
-        <div class="field"><label>Details</label><input type="text" id="details" placeholder="Enter દબાવો = Save" onkeypress="saveOnEnter(event)"></div>
-        <button onclick="saveEntry()" class="success" style="width:100%; padding:10px; font-size:14px;">SAVE ENTRY</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn-new" onclick="resetForm()">New Entry</button>
+    <button class="btn-party" onclick="alert('Party Ledger આવશે')">Party Ledger</button>
+    <button class="btn-report" onclick="alert('Full Report આવશે')">Full Report Preview</button>
+    <button class="btn-excel" onclick="exportExcel()">Excel</button>
+    <button class="btn-backup" onclick="backupData()">Backup Now</button>
+    <button class="btn-restore" onclick="restoreData()">Data Restore</button>
+    <input type="date" id="filterDate1">
+    <input type="date" id="filterDate2">
+    <select id="filterType">
+      <option value="">Aavak+Javak</option>
+      <option value="Aavak">Aavak</option>
+      <option value="Javak">Javak</option>
+    </select>
+    <select id="filterParty"><option value="">All Party</option></select>
+    <input type="text" id="searchBox" placeholder="🔍 Search All Columns..." onkeyup="renderTable()">
+  </div>
+
+  <div class="main-grid">
+    <div class="panel">
+      <h3>1. Date</h3>
+      <input type="date" id="date">
+      <label>2. Type</label>
+      <select id="type"><option>Rokad</option><option>GPay</option></select>
+      <label>3. Aavak/Javak</label>
+      <select id="aj"><option>Aavak</option><option>Javak</option></select>
+      <label>4. Vehicle Type</label>
+      <input type="text" id="vehicle" placeholder="Tractor, JCB, Any, ya type karo">
+      <label>5. Amount ₹</label>
+      <input type="number" id="amount" placeholder="0">
+      <label>6. Party Name</label>
+      <input type="text" id="party" placeholder="">
+      <label>7. Details</label>
+      <input type="text" id="details" placeholder="Enter kari ne Enter dabavo = Save">
+      <button class="btn-save" onclick="saveEntry()">SAVE ENTRY</button>
     </div>
-    <div class="list-box">
-        <input type="text" id="globalSearch" class="search-box" placeholder="🔍 Search..." onkeyup="filterData()" style="width:100%; margin-bottom:8px;">
-        <span class="search-info" id="searchInfo"></span>
-        <table id="mytable">
-            <thead>
-                <tr>
-                    <th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Amt</th><th>Party</th><th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
+
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Vehicle</th>
+              <th>Rokad</th><th>GPay</th><th>Total</th><th>Party</th><th>Details</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
         </table>
+      </div>
+      <div style="font-size: 11px; margin-top: 6px;">Total: <span id="entryCount">0</span> entries</div>
     </div>
-</div>
+  </div>
 
 <script>
-// IndexedDB Setup - ડેટા ફોનમાં સેફ રહેશે
-let db;
-const request = indexedDB.open('RokadDB', 1);
-request.onupgradeneeded = e => {
-    db = e.target.result;
-    if (!db.objectStoreNames.contains('entries')) {
-        db.createObjectStore('entries', { keyPath: 'sr' });
-    }
-};
-request.onsuccess = e => { db = e.target.result; loadList(); };
-
-var srno = 1;
-var allEntries = [];
-var editIndex = -1;
-var vehicleHistory = ['Tractor', 'JCB', 'Any', 'Truck'];
-
-window.onload = function() {
-    document.getElementById('date').value = new Date().toISOString().split('T')[0];
-    updateVehicleDatalist();
-    updateSyncStatus();
-}
-
-function formatDate(d) {
-    if(!d) return '';
-    var parts = d.split('-');
-    return parts[2] + '-' + parts[1] + '-' + parts[0];
-}
-
-function loadList() {
-    const tx = db.transaction('entries', 'readonly');
-    const store = tx.objectStore('entries');
-    const req = store.getAll();
-    req.onsuccess = () => {
-        allEntries = req.result || [];
-        srno = allEntries.length > 0? Math.max(...allEntries.map(x => x.sr)) + 1 : 1;
-        refreshTable();
-    }
-}
-
-function saveToDB(data) {
-    const tx = db.transaction('entries', 'readwrite');
-    tx.objectStore('entries').put(data);
-}
-
-function toggleDualAmount() {
-    var type = document.getElementById('type').value;
-    document.getElementById('singleAmount').style.display = type==='Bane'?'none':'block';
-    document.getElementById('dualAmount').style.display = type==='Bane'?'block':'none';
-}
-
-function calcTotal() {
-    var r = parseFloat(document.getElementById('rokadAmount').value) || 0;
-    var g = parseFloat(document.getElementById('gpayAmount').value) || 0;
-    document.getElementById('totalDual').innerText = (r + g).toFixed(2);
-}
-
-function saveOnEnter(event) {
-    if(event.key === 'Enter') {
-        event.preventDefault();
-        saveEntry();
-    }
-}
+let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
+let editId = null;
+document.getElementById('date').valueAsDate = new Date();
 
 function saveEntry() {
-    var type = document.getElementById('type').value;
-    var rokadAmt = 0, gpayAmt = 0, totalAmt = 0;
+  const entry = {
+    id: editId || Date.now(),
+    date: document.getElementById('date').value,
+    type: document.getElementById('type').value,
+    aj: document.getElementById('aj').value,
+    vehicle: document.getElementById('vehicle').value,
+    amount: parseFloat(document.getElementById('amount').value) || 0,
+    party: document.getElementById('party').value,
+    details: document.getElementById('details').value
+  };
+  if (!entry.amount) return alert('Amount નાખો');
+  
+  if (editId) {
+    data = data.map(d => d.id === editId? entry : d);
+    editId = null;
+  } else {
+    data.push(entry);
+  }
+  localStorage.setItem('rokadData', JSON.stringify(data));
+  resetForm();
+  renderTable();
+}
 
-    if(type === 'Bane') {
-        rokadAmt = parseFloat(document.getElementById('rokadAmount').value) || 0;
-        gpayAmt = parseFloat(document.getElementById('gpayAmount').value) || 0;
-        totalAmt = rokadAmt + gpayAmt;
+function resetForm() {
+  document.getElementById('vehicle').value = '';
+  document.getElementById('amount').value = '';
+  document.getElementById('party').value = '';
+  document.getElementById('details').value = '';
+  document.getElementById('date').valueAsDate = new Date();
+  editId = null;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('dataTable');
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  let filtered = data.filter(d => {
+    return JSON.stringify(d).toLowerCase().includes(search);
+  });
+  
+  tbody.innerHTML = filtered.map((d, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${d.date}</td>
+      <td>${d.type}</td>
+      <td>${d.aj}</td>
+      <td>${d.vehicle}</td>
+      <td>${d.type==='Rokad'?d.amount:0}</td>
+      <td>${d.type==='GPay'?d.amount:0}</td>
+      <td>${d.amount}</td>
+      <td>${d.party}</td>
+      <td>${d.details}</td>
+      <td>
+        <button class="action-btn edit" onclick="editEntry(${d.id})">E</button>
+        <button class="action-btn del" onclick="delEntry(${d.id})">D</button>
+      </td>
+    </tr>
+  `).join('');
+  
+  updateTotals();
+  updatePartyList();
+  document.getElementById('entryCount').textContent = filtered.length;
+}
+
+function editEntry(id) {
+  const d = data.find(x => x.id === id);
+  document.getElementById('date').value = d.date;
+  document.getElementById('type').value = d.type;
+  document.getElementById('aj').value = d.aj;
+  document.getElementById('vehicle').value = d.vehicle;
+  document.getElementById('amount').value = d.amount;
+  document.getElementById('party').value = d.party;
+  document.getElementById('details').value = d.details;
+  editId = id;
+}
+
+function delEntry(id) {
+  if (confirm('Delete કરવું છે?')) {
+    data = data.filter(d => d.id!== id);
+    localStorage.setItem('rokadData', JSON.stringify(data));
+    renderTable();
+  }
+}
+
+function updateTotals() {
+  let rokad = 0, gpay = 0;
+  data.forEach(d => {
+    if (d.aj === 'Aavak') {
+      if (d.type === 'Rokad') rokad += d.amount;
+      if (d.type === 'GPay') gpay += d.amount;
     } else {
-        totalAmt = parseFloat(document.getElementById('amount').value) || 0;
-        if(type === 'Rokad') rokadAmt = totalAmt;
-        else gpayAmt = totalAmt;
+      if (d.type === 'Rokad') rokad -= d.amount;
+      if (d.type === 'GPay') gpay -= d.amount;
     }
-
-    if(!document.getElementById('date').value ||!totalAmt ||!document.getElementById('party').value) {
-        alert('Date, Amount, Party ભરો!');
-        return;
-    }
-
-    var data = {
-        sr: editIndex === -1? srno : allEntries[editIndex].sr,
-        date: document.getElementById('date').value,
-        type: type,
-        aavakjavak: document.getElementById('aavakjavak').value,
-        vehicleType: document.getElementById('vehicleType').value,
-        rokadAmount: rokadAmt,
-        gpayAmount: gpayAmt,
-        amount: totalAmt,
-        party: document.getElementById('party').value,
-        details: document.getElementById('details').value,
-        timestamp: new Date().toISOString()
-    };
-
-    if(editIndex === -1) {
-        allEntries.push(data);
-        srno++;
-    } else {
-        allEntries[editIndex] = data;
-        cancelEdit();
-    }
-
-    saveToDB(data);
-    showAutoMsg();
-    refreshTable();
-    clearForm();
-    backupToDriveAuto();
+  });
+  document.getElementById('rokadTotal').textContent = '₹ ' + rokad.toFixed(2);
+  document.getElementById('gpayTotal').textContent = '₹ ' + gpay.toFixed(2);
+  document.getElementById('grandTotal').textContent = '₹ ' + (rokad + gpay).toFixed(2);
 }
 
-function editEntry(index) {
-    editIndex = index;
-    var data = allEntries[index];
-    document.getElementById('date').value = data.date;
-    document.getElementById('type').value = data.type;
-    document.getElementById('aavakjavak').value = data.aavakjavak;
-    document.getElementById('vehicleType').value = data.vehicleType || '';
-    document.getElementById('party').value = data.party;
-    document.getElementById('details').value = data.details;
-    toggleDualAmount();
-    if(data.type === 'Bane') {
-        document.getElementById('rokadAmount').value = data.rokadAmount;
-        document.getElementById('gpayAmount').value = data.gpayAmount;
-        calcTotal();
-    } else {
-        document.getElementById('amount').value = data.amount;
-    }
-    document.getElementById('editBanner').style.display = 'block';
-    document.getElementById('editSrNo').innerText = data.sr;
-    window.scrollTo(0, 0);
-}
-
-function cancelEdit() {
-    editIndex = -1;
-    document.getElementById('editBanner').style.display = 'none';
-    clearForm();
-}
-
-function showAutoMsg() {
-    document.getElementById('autoMsg').style.display = 'block';
-    setTimeout(() => { document.getElementById('autoMsg').style.display = 'none'; }, 1500);
-}
-
-function refreshTable() {
-    var tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    var filtered = getFilteredEntries();
-    document.getElementById('searchInfo').innerText = `Total: ${filtered.length}`;
-
-    for(var i=0; i<filtered.length; i++) {
-        var row = tbody.insertRow();
-        var originalIndex = allEntries.indexOf(filtered[i]);
-        if(editIndex === originalIndex) row.classList.add('edit-mode');
-        var ajClass = filtered[i].aavakjavak === 'Aavak'? 'aavak' : 'javak';
-        row.innerHTML = `<td>${filtered[i].sr}</td><td>${formatDate(filtered[i].date)}</td><td>${filtered[i].type}</td><td class="${ajClass}">${filtered[i].aavakjavak[0]}</td><td>₹${filtered[i].amount.toFixed(0)}</td><td>${filtered[i].party}</td><td><button class="edit-btn" onclick="editEntry(${originalIndex})">E</button><button class="del-btn" onclick="deleteEntry(${originalIndex})">D</button></td>`;
-    }
-    updateBalances();
-}
-
-function getFilteredEntries() {
-    var search = document.getElementById('globalSearch').value.toLowerCase();
-    if(!search) return allEntries;
-    return allEntries.filter(e =>
-        formatDate(e.date).includes(search) ||
-        e.party.toLowerCase().includes(search) ||
-        e.details.toLowerCase().includes(search)
-    );
-}
-
-function deleteEntry(index) {
-    if(confirm('Delete કરવી છે?')) {
-        const tx = db.transaction('entries', 'readwrite');
-        tx.objectStore('entries').delete(allEntries[index].sr);
-        allEntries.splice(index, 1);
-        refreshTable();
-    }
-}
-
-function clearForm() {
-    if(editIndex!== -1) { cancelEdit(); return; }
-    document.getElementById('amount').value = '';
-    document.getElementById('rokadAmount').value = '';
-    document.getElementById('gpayAmount').value = '';
-    document.getElementById('totalDual').innerText = '0.00';
-    document.getElementById('party').value = '';
-    document.getElementById('details').value = '';
-    document.getElementById('vehicleType').value = '';
-}
-
-function updateBalances() {
-    var finalRokad = 0, finalGpay = 0;
-    allEntries.forEach(e => {
-        if(e.type === 'Rokad' || e.type === 'Bane') {
-            finalRokad += e.aavakjavak === 'Aavak'? e.rokadAmount : -e.rokadAmount;
-        }
-        if(e.type === 'GPay' || e.type === 'Bane') {
-            finalGpay += e.aavakjavak === 'Aavak'? e.gpayAmount : -e.gpayAmount;
-        }
-    });
-    document.getElementById('rokadBalance').innerText = finalRokad.toFixed(0);
-    document.getElementById('gpayBalance').innerText = finalGpay.toFixed(0);
-    document.getElementById('totalBalance').innerText = (finalRokad + finalGpay).toFixed(0);
-}
-
-function filterData() { refreshTable(); }
-
-function updateVehicleDatalist() {
-    var datalist = document.getElementById('vehicleList');
-    datalist.innerHTML = '';
-    vehicleHistory.forEach(v => { datalist.innerHTML += '<option value="'+v+'">'; });
+function updatePartyList() {
+  const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
+  document.getElementById('filterParty').innerHTML = '<option value="">All Party</option>' + 
+    parties.map(p => `<option>${p}</option>`).join('');
 }
 
 function exportExcel() {
-    var csv = 'Sr,Date,Type,AavakJavak,Vehicle,Rokad,GPay,Total,Party,Details\n';
-    allEntries.forEach(e => {
-        csv += `${e.sr},${formatDate(e.date)},${e.type},${e.aavakjavak},${e.vehicleType},${e.rokadAmount},${e.gpayAmount},${e.amount},${e.party},"${e.details}"\n`;
-    });
-    var blob = new Blob([csv], {type: 'text/csv'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'ledger_'+new Date().toISOString().split('T')[0]+'.csv';
-    a.click();
+  let csv = 'Date,Type,A/J,Vehicle,Amount,Party,Details\n';
+  data.forEach(d => {
+    csv += `${d.date},${d.type},${d.aj},${d.vehicle},${d.amount},${d.party},${d.details}\n`;
+  });
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'RokadLedger.csv'; a.click();
 }
 
-// Google Drive Backup - મેન્યુઅલ
-function backupToDrive() {
-    const data = JSON.stringify(allEntries);
-    const blob = new Blob([data], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `RokadBackup_${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    document.getElementById('syncStatus').innerText = 'Backed up ' + new Date().toLocaleTimeString();
+function backupData() {
+  const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'RokadBackup.json'; a.click();
+  alert('Backup Download થઈ ગયું');
 }
 
-// Auto backup to localStorage every 5 min
-function backupToDriveAuto() {
-    localStorage.setItem('rokad_auto_backup', JSON.stringify(allEntries));
-    document.getElementById('syncStatus').innerText = 'Synced ' + new Date().toLocaleTimeString();
-}
-setInterval(backupToDriveAuto, 300000);
-
-function restoreData(event) {
-    var file = event.target.files[0];
-    if(!file ||!confirm('બધો ડેટા રિપ્લેસ થશે. OK?')) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const restored = JSON.parse(e.target.result);
-            const tx = db.transaction('entries', 'readwrite');
-            const store = tx.objectStore('entries');
-            store.clear();
-            restored.forEach(item => store.put(item));
-            allEntries = restored;
-            srno = allEntries.length > 0? Math.max(...allEntries.map(x => x.sr)) + 1 : 1;
-            refreshTable();
-            alert('Restore થઈ ગયો! Total: '+allEntries.length);
-        } catch(err) { alert('Error: '+err.message); }
+function restoreData() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = ev => {
+      data = JSON.parse(ev.target.result);
+      localStorage.setItem('rokadData', JSON.stringify(data));
+      renderTable();
+      alert('Data Restore થઈ ગયું');
     };
     reader.readAsText(file);
+  };
+  input.click();
 }
 
-// PWA Install
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('installBtn').style.display = 'inline-block';
-});
-document.getElementById('installBtn').addEventListener('click', async () => {
-    if(deferredPrompt) {
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        document.getElementById('installBtn').style.display = 'none';
-    }
+document.getElementById('details').addEventListener('keypress', e => {
+  if (e.key === 'Enter') saveEntry();
 });
 
-// Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register('sw.js');
 }
 
-function updateSyncStatus() {
-    document.getElementById('syncStatus').innerText = navigator.onLine? 'Online' : 'Offline';
-}
-window.addEventListener('online', updateSyncStatus);
-window.addEventListener('offline', updateSyncStatus);
+renderTable();
 </script>
 </body>
 </html>
