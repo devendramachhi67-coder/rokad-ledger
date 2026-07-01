@@ -7,52 +7,40 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e293b">
   <link rel="icon" href="icon-192.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-  .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-  .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-  .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-  .rokad { background: #ea580c; }
-  .gpay { background: #7c3aed; }
-  .total { background: #059669; }
-  .card.label { font-size: 11px; opacity: 0.9; }
-  .card.amount { font-size: 16px; margin-top: 4px; }
-    
-  .toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-  .toolbar button,.toolbar input,.toolbar select { 
-      padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; 
-      background: white; cursor: pointer; height: 36px;
-    }
-  .toolbar button { color: white; border: none; font-weight: 600; }
-  .btn-new { background: #f97316; }
-  .btn-party { background: #8b5cf6; }
-  .btn-report { background: #06b6d4; }
-  .btn-excel { background: #10b981; }
-  .btn-backup { background: #059669; }
-  .btn-restore { background: #ea580c; }
-    
-  .filters { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 2fr; gap: 6px; margin-bottom: 8px; }
-    @media (max-width: 768px) {.filters { grid-template-columns: 1fr 1fr; } }
-    
-  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+.totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+.rokad { background: #ea580c; }
+.gpay { background: #7c3aed; }
+.total { background: #059669; }
+.card.label { font-size: 11px; opacity: 0.9; }
+.card.amount { font-size: 16px; margin-top: 4px; }
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
+.main-grid.full { grid-template-columns: 1fr; }
+.main-grid.full.panel:first-child { display: none; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
-    
-  .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-  .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+.panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-  .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; 
-      font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
-    
+.btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-  .search-box { width: 100%; margin-bottom: 8px; padding: 6px; }
-  .table-wrap { max-height: 450px; overflow: auto; }
-  .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
-  .edit { background: #3b82f6; color: white; }
-  .del { background: #ef4444; color: white; }
+.table-wrap { max-height: 450px; overflow: auto; }
+.full.table-wrap { max-height: 70vh; }
+.action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+.edit { background: #3b82f6; color: white; }
+.del { background: #ef4444; color: white; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
+.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close:hover { color: #000; }
   </style>
 </head>
 <body>
@@ -74,27 +62,29 @@
   </div>
 
   <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-  <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="resetForm()">New Entry</button>
-  <button style="background:#8b5cf6;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="alert('Party Ledger')">Party Ledger</button>
-  <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="alert('Report')">Full Report</button>
-  <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="exportExcel()">Excel</button>
-  <button style="background:#059669;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="backupData()">Backup Now</button>
-  <button style="background:#ea580c;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="restoreData()">Data Restore</button>
-</div>
+    <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="resetForm()">New Entry</button>
+    <button style="background:#8b5cf6;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="showPartyLedger()">Party Ledger</button>
+    <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="showFullReport()">Full Report</button>
+    <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="exportExcel()">Excel</button>
+    <button style="background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="exportPDF()">PDF</button>
+    <button style="background:#059669;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="backupData()">Backup</button>
+    <button style="background:#ea580c;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="restoreData()">Restore</button>
+    <button id="screenBtn" style="background:#475569;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="toggleScreen()">Full Screen</button>
+  </div>
 
-  <div class="filters">
-    <input type="date" id="filterDate1">
-    <input type="date" id="filterDate2">
-    <select id="filterType" onchange="renderTable()">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 2fr;gap:6px;margin-bottom:8px;">
+    <input type="date" id="filterDate1" style="padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;" onchange="renderTable()">
+    <input type="date" id="filterDate2" style="padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;" onchange="renderTable()">
+    <select id="filterType" onchange="renderTable()" style="padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
       <option value="">Aavak+Javak</option>
       <option value="Aavak">Aavak</option>
       <option value="Javak">Javak</option>
     </select>
-    <select id="filterParty" onchange="renderTable()"><option value="">All Party</option></select>
-    <input type="text" id="searchBox" placeholder="🔍 Search All Columns..." onkeyup="renderTable()">
+    <select id="filterParty" onchange="renderTable()" style="padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;"><option value="">All Party</option></select>
+    <input type="text" id="searchBox" placeholder="🔍 Search All Columns..." onkeyup="renderTable()" style="padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
   </div>
 
-  <div class="main-grid">
+  <div class="main-grid" id="mainGrid">
     <div class="panel">
       <h3>1. Date</h3>
       <input type="date" id="date">
@@ -129,10 +119,34 @@
     </div>
   </div>
 
+  <div id="reportModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle" style="margin-bottom:15px;"></h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
 <script>
 let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
 let editId = null;
+let isFullScreen = false;
 document.getElementById('date').valueAsDate = new Date();
+
+function toggleScreen() {
+  isFullScreen =!isFullScreen;
+  const grid = document.getElementById('mainGrid');
+  const btn = document.getElementById('screenBtn');
+  if (isFullScreen) {
+    grid.classList.add('full');
+    btn.textContent = 'Mini Screen';
+    btn.style.background = '#0ea5e9';
+  } else {
+    grid.classList.remove('full');
+    btn.textContent = 'Full Screen';
+    btn.style.background = '#475569';
+  }
+}
 
 function saveEntry() {
   const entry = {
@@ -167,18 +181,26 @@ function resetForm() {
   editId = null;
 }
 
-function renderTable() {
-  const tbody = document.getElementById('dataTable');
+function getFilteredData() {
   const search = document.getElementById('searchBox').value.toLowerCase();
   const filterType = document.getElementById('filterType').value;
   const filterParty = document.getElementById('filterParty').value;
+  const d1 = document.getElementById('filterDate1').value;
+  const d2 = document.getElementById('filterDate2').value;
   
-  let filtered = data.filter(d => {
+  return data.filter(d => {
     let match = JSON.stringify(d).toLowerCase().includes(search);
     if (filterType && d.aj!== filterType) match = false;
     if (filterParty && d.party!== filterParty) match = false;
+    if (d1 && d.date < d1) match = false;
+    if (d2 && d.date > d2) match = false;
     return match;
   });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('dataTable');
+  let filtered = getFilteredData();
   
   tbody.innerHTML = filtered.map((d, i) => `
     <tr>
@@ -214,6 +236,7 @@ function editEntry(id) {
   document.getElementById('party').value = d.party;
   document.getElementById('details').value = d.details;
   editId = id;
+  if (isFullScreen) toggleScreen();
   window.scrollTo(0,0);
 }
 
@@ -248,14 +271,41 @@ function updatePartyList() {
 }
 
 function exportExcel() {
+  let filtered = getFilteredData();
   let csv = 'Date,Type,A/J,Vehicle,Amount,Party,Details\n';
-  data.forEach(d => {
+  filtered.forEach(d => {
     csv += `${d.date},${d.type},${d.aj},${d.vehicle},${d.amount},${d.party},${d.details}\n`;
   });
   const blob = new Blob([csv], {type: 'text/csv'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'RokadLedger.csv'; a.click();
+}
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let filtered = getFilteredData();
+  
+  doc.setFontSize(16);
+  doc.text('ROKAD & GPAY LEDGER', 105, 15, { align: 'center' });
+  
+  const tableData = filtered.map((d, i) => [
+    i+1, d.date, d.type, d.aj, d.vehicle, 
+    d.type==='Rokad'?d.amount.toFixed(2):'0.00',
+    d.type==='GPay'?d.amount.toFixed(2):'0.00',
+    d.amount.toFixed(2), d.party, d.details
+  ]);
+  
+  doc.autoTable({
+    head: [['Sr', 'Date', 'Type', 'A/J', 'Vehicle', 'Rokad', 'GPay', 'Total', 'Party', 'Details']],
+    body: tableData,
+    startY: 25,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [51, 65, 85] }
+  });
+  
+  doc.save('RokadLedger.pdf');
 }
 
 function backupData() {
@@ -284,11 +334,63 @@ function restoreData() {
 }
 
 function showPartyLedger() {
-  alert('Party Ledger: બધી પાર્ટીનો હિસાબ અલગથી જોવા માટે. આગળના વર્ઝનમાં ફુલ રિપોર્ટ એડ કરીશું');
+  const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
+  let html = '<table style="width:100%;border-collapse:collapse;"><tr style="background:#334155;color:white;"><th style="padding:8px;border:1px solid #ddd;">Party Name</th><th style="padding:8px;border:1px solid #ddd;">Rokad Aavak</th><th style="padding:8px;border:1px solid #ddd;">Rokad Javak</th><th style="padding:8px;border:1px solid #ddd;">GPay Aavak</th><th style="padding:8px;border:1px solid #ddd;">GPay Javak</th><th style="padding:8px;border:1px solid #ddd;">Balance</th></tr>';
+  
+  parties.forEach(p => {
+    let ra=0, rj=0, ga=0, gj=0;
+    data.filter(d => d.party === p).forEach(d => {
+      if(d.type==='Rokad' && d.aj==='Aavak') ra+=d.amount;
+      if(d.type==='Rokad' && d.aj==='Javak') rj+=d.amount;
+      if(d.type==='GPay' && d.aj==='Aavak') ga+=d.amount;
+      if(d.type==='GPay' && d.aj==='Javak') gj+=d.amount;
+    });
+    html += `<tr><td style="padding:8px;border:1px solid #ddd;">${p}</td><td style="padding:8px;border:1px solid #ddd;">${ra.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${rj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${ga.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${gj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">${(ra-rj+ga-gj).toFixed(2)}</td></tr>`;
+  });
+  html += '</table>';
+  
+  document.getElementById('modalTitle').textContent = 'Party Ledger';
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('reportModal').style.display = 'block';
 }
 
 function showFullReport() {
-  alert('Full Report: તારીખ વાઈઝ, પાર્ટી વાઈઝ રિપોર્ટ. આગળના વર્ઝનમાં PDF એડ કરીશું');
+  let filtered = getFilteredData();
+  let ra=0, rj=0, ga=0, gj=0;
+  filtered.forEach(d => {
+    if(d.type==='Rokad' && d.aj==='Aavak') ra+=d.amount;
+    if(d.type==='Rokad' && d.aj==='Javak') rj+=d.amount;
+    if(d.type==='GPay' && d.aj==='Aavak') ga+=d.amount;
+    if(d.type==='GPay' && d.aj==='Javak') gj+=d.amount;
+  });
+  
+  let html = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px;">
+      <div style="background:#fef3c7;padding:15px;border-radius:8px;">
+        <h3 style="margin:0 0 10px 0;color:#92400e;">Rokad Summary</h3>
+        <p>Total Aavak: ₹ ${ra.toFixed(2)}</p>
+        <p>Total Javak: ₹ ${rj.toFixed(2)}</p>
+        <p style="font-weight:bold;border-top:2px solid #92400e;padding-top:5px;">Balance: ₹ ${(ra-rj).toFixed(2)}</p>
+      </div>
+      <div style="background:#ede9fe;padding:15px;border-radius:8px;">
+        <h3 style="margin:0 0 10px 0;color:#5b21b6;">GPay Summary</h3>
+        <p>Total Aavak: ₹ ${ga.toFixed(2)}</p>
+        <p>Total Javak: ₹ ${gj.toFixed(2)}</p>
+        <p style="font-weight:bold;border-top:2px solid #5b21b6;padding-top:5px;">Balance: ₹ ${(ga-gj).toFixed(2)}</p>
+      </div>
+    </div>
+    <h3>Total Entries: ${filtered.length}</h3>
+    <h3 style="color:#059669;">Grand Total Balance: ₹ ${(ra-rj+ga-gj).toFixed(2)}</h3>
+    <button style="background:#dc2626;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;" onclick="exportPDF()">Download PDF Report</button>
+  `;
+  
+  document.getElementById('modalTitle').textContent = 'Full Report';
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('reportModal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('reportModal').style.display = 'none';
 }
 
 document.getElementById('details').addEventListener('keypress', e => {
