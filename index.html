@@ -12,35 +12,35 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-.header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-.totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-.rokad { background: #ea580c; }
-.gpay { background: #7c3aed; }
-.total { background: #059669; }
-.card.label { font-size: 11px; opacity: 0.9; }
-.card.amount { font-size: 16px; margin-top: 4px; }
-.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
-.main-grid.full { grid-template-columns: 1fr; }
-.main-grid.full.panel:first-child { display: none; }
+    .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+    .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+    .rokad { background: #ea580c; }
+    .gpay { background: #7c3aed; }
+    .total { background: #059669; }
+    .card.label { font-size: 11px; opacity: 0.9; }
+    .card.amount { font-size: 16px; margin-top: 4px; }
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
+    .main-grid.full { grid-template-columns: 1fr; }
+    .main-grid.full.panel:first-child { display: none; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
-.panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+    .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-.btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
+    .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-.table-wrap { max-height: 450px; overflow: auto; }
-.full.table-wrap { max-height: 75vh; }
-.action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
-.edit { background: #3b82f6; color: white; }
-.del { background: #ef4444; color: white; }
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-.modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
-.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-.close:hover { color: #000; }
+    .table-wrap { max-height: 450px; overflow: auto; }
+    .full.table-wrap { max-height: 75vh; }
+    .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+    .edit { background: #3b82f6; color: white; }
+    .del { background: #ef4444; color: white; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+    .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close:hover { color: #000; }
   </style>
 </head>
 <body>
@@ -91,9 +91,9 @@
       <label>2. Type</label>
       <select id="type"><option>Rokad</option><option>GPay</option></select>
       <label>3. Aavak/Javak</label>
-      <select id="aj"><option>Aavak</option><option>Javak</option></select>
+      <select id="aavakjavak"><option>Aavak</option><option>Javak</option></select>
       <label>4. Vehicle Type</label>
-      <input type="text" id="vehicle" placeholder="Tractor, JCB, Any, ya type karo">
+      <input type="text" id="vehicleType" placeholder="Tractor, JCB, Any">
       <label>5. Amount ₹</label>
       <input type="number" id="amount" placeholder="0">
       <label>6. Party Name</label>
@@ -156,20 +156,26 @@ function toggleScreen() {
 }
 
 function saveEntry() {
+  const type = document.getElementById('type').value;
+  const amt = parseFloat(document.getElementById('amount').value) || 0;
+  
   const entry = {
-    id: editId || Date.now(),
+    sr: editId || data.length + 1,
     date: document.getElementById('date').value,
-    type: document.getElementById('type').value,
-    aj: document.getElementById('aj').value,
-    vehicle: document.getElementById('vehicle').value,
-    amount: parseFloat(document.getElementById('amount').value) || 0,
+    type: type,
+    aavakjavak: document.getElementById('aavakjavak').value,
+    vehicleType: document.getElementById('vehicleType').value,
+    rokadAmount: type === 'Rokad' ? amt : 0,
+    gpayAmount: type === 'GPay' ? amt : 0,
+    amount: amt,
     party: document.getElementById('party').value,
     details: document.getElementById('details').value
   };
+  
   if (!entry.amount) return alert('Amount નાખો');
   
   if (editId) {
-    data = data.map(d => d.id === editId? entry : d);
+    data = data.map(d => d.sr === editId ? entry : d);
     editId = null;
   } else {
     data.push(entry);
@@ -180,7 +186,7 @@ function saveEntry() {
 }
 
 function resetForm() {
-  document.getElementById('vehicle').value = '';
+  document.getElementById('vehicleType').value = '';
   document.getElementById('amount').value = '';
   document.getElementById('party').value = '';
   document.getElementById('details').value = '';
@@ -197,8 +203,8 @@ function getFilteredData() {
   
   return data.filter(d => {
     let match = JSON.stringify(d).toLowerCase().includes(search);
-    if (filterType && d.aj!== filterType) match = false;
-    if (filterParty && d.party!== filterParty) match = false;
+    if (filterType && d.aavakjavak !== filterType) match = false;
+    if (filterParty && d.party !== filterParty) match = false;
     if (d1 && d.date < d1) match = false;
     if (d2 && d.date > d2) match = false;
     return match;
@@ -214,16 +220,16 @@ function renderTable() {
       <td>${i+1}</td>
       <td>${formatDate(d.date)}</td>
       <td>${d.type}</td>
-      <td>${d.aj}</td>
-      <td>${d.vehicle}</td>
-      <td>${d.type==='Rokad'?d.amount.toFixed(2):'0.00'}</td>
-      <td>${d.type==='GPay'?d.amount.toFixed(2):'0.00'}</td>
+      <td>${d.aavakjavak}</td>
+      <td>${d.vehicleType}</td>
+      <td>${d.rokadAmount.toFixed(2)}</td>
+      <td>${d.gpayAmount.toFixed(2)}</td>
       <td>${d.amount.toFixed(2)}</td>
       <td>${d.party}</td>
       <td>${d.details}</td>
       <td>
-        <button class="action-btn edit" onclick="editEntry(${d.id})">E</button>
-        <button class="action-btn del" onclick="delEntry(${d.id})">D</button>
+        <button class="action-btn edit" onclick="editEntry(${d.sr})">E</button>
+        <button class="action-btn del" onclick="delEntry(${d.sr})">D</button>
       </td>
     </tr>
   `).join('');
@@ -233,23 +239,23 @@ function renderTable() {
   document.getElementById('entryCount').textContent = filtered.length;
 }
 
-function editEntry(id) {
-  const d = data.find(x => x.id === id);
+function editEntry(sr) {
+  const d = data.find(x => x.sr === sr);
   document.getElementById('date').value = d.date;
   document.getElementById('type').value = d.type;
-  document.getElementById('aj').value = d.aj;
-  document.getElementById('vehicle').value = d.vehicle;
+  document.getElementById('aavakjavak').value = d.aavakjavak;
+  document.getElementById('vehicleType').value = d.vehicleType;
   document.getElementById('amount').value = d.amount;
   document.getElementById('party').value = d.party;
   document.getElementById('details').value = d.details;
-  editId = id;
+  editId = sr;
   if (isFullScreen) toggleScreen();
   window.scrollTo(0,0);
 }
 
-function delEntry(id) {
+function delEntry(sr) {
   if (confirm('Delete કરવું છે?')) {
-    data = data.filter(d => d.id!== id);
+    data = data.filter(d => d.sr !== sr);
     localStorage.setItem('rokadData', JSON.stringify(data));
     renderTable();
   }
@@ -258,13 +264,12 @@ function delEntry(id) {
 function updateTotals() {
   let rokad = 0, gpay = 0;
   data.forEach(d => {
-    let isAavak = d.aj === 'Aavak';
-    if (isAavak) {
-      if (d.type === 'Rokad') rokad += d.amount;
-      if (d.type === 'GPay') gpay += d.amount;
+    if (d.aavakjavak === 'Aavak') {
+      rokad += d.rokadAmount;
+      gpay += d.gpayAmount;
     } else {
-      if (d.type === 'Rokad') rokad -= d.amount;
-      if (d.type === 'GPay') gpay -= d.amount;
+      rokad -= d.rokadAmount;
+      gpay -= d.gpayAmount;
     }
   });
   document.getElementById('rokadTotal').textContent = '₹ ' + rokad.toFixed(2);
@@ -280,9 +285,9 @@ function updatePartyList() {
 
 function exportExcel() {
   let filtered = getFilteredData();
-  let csv = 'Date,Type,A/J,Vehicle,Amount,Party,Details\n';
+  let csv = 'Date,Type,A/J,Vehicle,Rokad,GPay,Total,Party,Details\n';
   filtered.forEach(d => {
-    csv += `${formatDate(d.date)},${d.type},${d.aj},${d.vehicle},${d.amount},${d.party},${d.details}\n`;
+    csv += `${formatDate(d.date)},${d.type},${d.aavakjavak},${d.vehicleType},${d.rokadAmount},${d.gpayAmount},${d.amount},${d.party},${d.details}\n`;
   });
   const blob = new Blob([csv], {type: 'text/csv'});
   const url = URL.createObjectURL(blob);
@@ -299,10 +304,8 @@ function exportPDF() {
   doc.text('ROKAD & GPAY LEDGER', 105, 15, { align: 'center' });
   
   const tableData = filtered.map((d, i) => [
-    i+1, formatDate(d.date), d.type, d.aj, d.vehicle,
-    d.type==='Rokad'?d.amount.toFixed(2):'0.00',
-    d.type==='GPay'?d.amount.toFixed(2):'0.00',
-    d.amount.toFixed(2), d.party, d.details
+    i+1, formatDate(d.date), d.type, d.aavakjavak, d.vehicleType,
+    d.rokadAmount.toFixed(2), d.gpayAmount.toFixed(2), d.amount.toFixed(2), d.party, d.details
   ]);
   
   doc.autoTable({
@@ -332,33 +335,10 @@ function restoreData() {
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        let rawData = JSON.parse(ev.target.result);
-
-        data = rawData.map(d => {
-          // તારા જૂના ફોર્મેટ મુજબ મેપિંગ
-          let ajValue = d.aavakjavak || d.aj || d['A/J'] || 'Aavak';
-          ajValue = String(ajValue).trim();
-          if (ajValue.toLowerCase() === 'javak' || ajValue === 'જાવક') {
-            ajValue = 'Javak';
-          } else {
-            ajValue = 'Aavak';
-          }
-
-          return {
-            id: d.id || d.sr || Date.now() + Math.random(),
-            date: d.date || '',
-            type: d.type || 'Rokad',
-            aj: ajValue,
-            vehicle: d.vehicleType || d.vehicle || '',
-            amount: parseFloat(d.amount || d.rokadAmount || d.gpayAmount || 0),
-            party: d.party || '',
-            details: d.details || ''
-          };
-        });
-
+        data = JSON.parse(ev.target.result);
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
-        alert('Data Restore થઈ ગયું.\nTotal: ' + data.length + ' entries\nAavak: ' + data.filter(d => d.aj === 'Aavak').length + '\nJavak: ' + data.filter(d => d.aj === 'Javak').length);
+        alert('Data Restore થઈ ગયું.\nTotal: ' + data.length + '\nAavak: ' + data.filter(d => d.aavakjavak === 'Aavak').length + '\nJavak: ' + data.filter(d => d.aavakjavak === 'Javak').length);
       } catch(err) {
         alert('Error: ' + err.message);
       }
@@ -375,10 +355,8 @@ function showPartyLedger() {
   parties.forEach(p => {
     let ra=0, rj=0, ga=0, gj=0;
     data.filter(d => d.party === p).forEach(d => {
-      if(d.type==='Rokad' && d.aj==='Aavak') ra+=d.amount;
-      if(d.type==='Rokad' && d.aj==='Javak') rj+=d.amount;
-      if(d.type==='GPay' && d.aj==='Aavak') ga+=d.amount;
-      if(d.type==='GPay' && d.aj==='Javak') gj+=d.amount;
+      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
+      else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
     });
     html += `<tr><td style="padding:8px;border:1px solid #ddd;">${p}</td><td style="padding:8px;border:1px solid #ddd;">${ra.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${rj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${ga.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${gj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">${(ra-rj+ga-gj).toFixed(2)}</td></tr>`;
   });
@@ -393,10 +371,8 @@ function showFullReport() {
   let filtered = getFilteredData();
   let ra=0, rj=0, ga=0, gj=0;
   filtered.forEach(d => {
-    if(d.type==='Rokad' && d.aj==='Aavak') ra+=d.amount;
-    if(d.type==='Rokad' && d.aj==='Javak') rj+=d.amount;
-    if(d.type==='GPay' && d.aj==='Aavak') ga+=d.amount;
-    if(d.type==='GPay' && d.aj==='Javak') gj+=d.amount;
+    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
+    else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
   });
   
   let html = `
