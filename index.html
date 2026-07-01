@@ -33,7 +33,7 @@
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
 .table-wrap { max-height: 450px; overflow: auto; }
-.full.table-wrap { max-height: 70vh; }
+.full.table-wrap { max-height: 75vh; }
 .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
 .edit { background: #3b82f6; color: white; }
 .del { background: #ef4444; color: white; }
@@ -133,6 +133,13 @@ let editId = null;
 let isFullScreen = false;
 document.getElementById('date').valueAsDate = new Date();
 
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return `${d.getDate()}-${d.getMonth()+1}-${String(d.getFullYear()).slice(-2)}`;
+}
+
 function toggleScreen() {
   isFullScreen =!isFullScreen;
   const grid = document.getElementById('mainGrid');
@@ -205,7 +212,7 @@ function renderTable() {
   tbody.innerHTML = filtered.map((d, i) => `
     <tr>
       <td>${i+1}</td>
-      <td>${d.date}</td>
+      <td>${formatDate(d.date)}</td>
       <td>${d.type}</td>
       <td>${d.aj}</td>
       <td>${d.vehicle}</td>
@@ -275,7 +282,7 @@ function exportExcel() {
   let filtered = getFilteredData();
   let csv = 'Date,Type,A/J,Vehicle,Amount,Party,Details\n';
   filtered.forEach(d => {
-    csv += `${d.date},${d.type},${d.aj},${d.vehicle},${d.amount},${d.party},${d.details}\n`;
+    csv += `${formatDate(d.date)},${d.type},${d.aj},${d.vehicle},${d.amount},${d.party},${d.details}\n`;
   });
   const blob = new Blob([csv], {type: 'text/csv'});
   const url = URL.createObjectURL(blob);
@@ -292,7 +299,7 @@ function exportPDF() {
   doc.text('ROKAD & GPAY LEDGER', 105, 15, { align: 'center' });
   
   const tableData = filtered.map((d, i) => [
-    i+1, d.date, d.type, d.aj, d.vehicle, 
+    i+1, formatDate(d.date), d.type, d.aj, d.vehicle,
     d.type==='Rokad'?d.amount.toFixed(2):'0.00',
     d.type==='GPay'?d.amount.toFixed(2):'0.00',
     d.amount.toFixed(2), d.party, d.details
@@ -327,17 +334,25 @@ function restoreData() {
       try {
         let rawData = JSON.parse(ev.target.result);
 
-        // જૂના બેકઅપ માટે ફીલ્ડ મેપિંગ ફિક્સ
-        data = rawData.map(d => ({
-          id: d.id || Date.now() + Math.random(),
-          date: d.date || '',
-          type: d.type || 'Rokad',
-          aj: d.aj || d.aavakJavak || d['Aavak/Javak'] || 'Aavak',
-          vehicle: d.vehicle || d.vehicleType || d['Vehicle Type'] || '',
-          amount: parseFloat(d.amount) || 0,
-          party: d.party || d.partyName || d['Party Name'] || '',
-          details: d.details || d.Details || ''
-        }));
+        data = rawData.map(d => {
+          let ajValue = d.aj || d.aavakJavak || d['Aavak/Javak'] || d['A/J'] || 'Aavak';
+          if (ajValue.toLowerCase().includes('javak') || ajValue.toLowerCase().includes('જાવક') || ajValue === 'J' || ajValue === '2') {
+            ajValue = 'Javak';
+          } else {
+            ajValue = 'Aavak';
+          }
+
+          return {
+            id: d.id || Date.now() + Math.random(),
+            date: d.date || '',
+            type: d.type || 'Rokad',
+            aj: ajValue,
+            vehicle: d.vehicle || d.vehicleType || d['Vehicle Type'] || '',
+            amount: parseFloat(d.amount) || 0,
+            party: d.party || d.partyName || d['Party Name'] || '',
+            details: d.details || d.Details || ''
+          };
+        });
 
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
