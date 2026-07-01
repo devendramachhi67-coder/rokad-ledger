@@ -8,44 +8,43 @@
   <meta name="theme-color" content="#1e293b">
   <link rel="icon" href="icon-192.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-    .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-    .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-    .rokad { background: #ea580c; }
-    .gpay { background: #7c3aed; }
-    .total { background: #059669; }
-    .card.label { font-size: 11px; opacity: 0.9; }
-    .card.amount { font-size: 16px; margin-top: 4px; }
-    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
-    .main-grid.full { grid-template-columns: 1fr; }
-    .main-grid.full.panel:first-child { display: none; }
+   .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+   .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+   .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+   .rokad { background: #ea580c; }
+   .gpay { background: #7c3aed; }
+   .total { background: #059669; }
+   .card.label { font-size: 11px; opacity: 0.9; }
+   .card.amount { font-size: 16px; margin-top: 4px; }
+   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
+   .main-grid.full { grid-template-columns: 1fr; }
+   .main-grid.full.panel:first-child { display: none; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
-    .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+   .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+   .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-    .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
+   .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-    .table-wrap { max-height: 450px; overflow: auto; }
-    .full.table-wrap { max-height: 75vh; }
-    .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
-    .edit { background: #3b82f6; color: white; }
-    .del { background: #ef4444; color: white; }
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-    .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
-    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-    .close:hover { color: #000; }
+   .table-wrap { max-height: 450px; overflow: auto; }
+   .full.table-wrap { max-height: 75vh; }
+   .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+   .edit { background: #3b82f6; color: white; }
+   .del { background: #ef4444; color: white; }
+   .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+   .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
+   .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+   .close:hover { color: #000; }
   </style>
 </head>
 <body>
   <div class="header">ROKAD & GPAY LEDGER</div>
-  
+
   <div class="totals">
     <div class="card rokad">
       <div class="label">ROKAD</div>
@@ -158,24 +157,24 @@ function toggleScreen() {
 function saveEntry() {
   const type = document.getElementById('type').value;
   const amt = parseFloat(document.getElementById('amount').value) || 0;
-  
+
   const entry = {
-    sr: editId || data.length + 1,
+    sr: editId || (data.length > 0? Math.max(...data.map(d => d.sr || 0)) + 1 : 1),
     date: document.getElementById('date').value,
     type: type,
     aavakjavak: document.getElementById('aavakjavak').value,
     vehicleType: document.getElementById('vehicleType').value,
-    rokadAmount: type === 'Rokad' ? amt : 0,
-    gpayAmount: type === 'GPay' ? amt : 0,
+    rokadAmount: type === 'Rokad'? amt : 0,
+    gpayAmount: type === 'GPay'? amt : 0,
     amount: amt,
     party: document.getElementById('party').value,
     details: document.getElementById('details').value
   };
-  
+
   if (!entry.amount) return alert('Amount નાખો');
-  
+
   if (editId) {
-    data = data.map(d => d.sr === editId ? entry : d);
+    data = data.map(d => d.sr === editId? entry : d);
     editId = null;
   } else {
     data.push(entry);
@@ -200,11 +199,11 @@ function getFilteredData() {
   const filterParty = document.getElementById('filterParty').value;
   const d1 = document.getElementById('filterDate1').value;
   const d2 = document.getElementById('filterDate2').value;
-  
+
   return data.filter(d => {
     let match = JSON.stringify(d).toLowerCase().includes(search);
-    if (filterType && d.aavakjavak !== filterType) match = false;
-    if (filterParty && d.party !== filterParty) match = false;
+    if (filterType && d.aavakjavak!== filterType) match = false;
+    if (filterParty && d.party!== filterParty) match = false;
     if (d1 && d.date < d1) match = false;
     if (d2 && d.date > d2) match = false;
     return match;
@@ -214,7 +213,7 @@ function getFilteredData() {
 function renderTable() {
   const tbody = document.getElementById('dataTable');
   let filtered = getFilteredData();
-  
+
   tbody.innerHTML = filtered.map((d, i) => `
     <tr>
       <td>${i+1}</td>
@@ -222,9 +221,9 @@ function renderTable() {
       <td>${d.type}</td>
       <td>${d.aavakjavak}</td>
       <td>${d.vehicleType}</td>
-      <td>${d.rokadAmount.toFixed(2)}</td>
-      <td>${d.gpayAmount.toFixed(2)}</td>
-      <td>${d.amount.toFixed(2)}</td>
+      <td>${(d.rokadAmount || 0).toFixed(2)}</td>
+      <td>${(d.gpayAmount || 0).toFixed(2)}</td>
+      <td>${(d.amount || 0).toFixed(2)}</td>
       <td>${d.party}</td>
       <td>${d.details}</td>
       <td>
@@ -233,7 +232,7 @@ function renderTable() {
       </td>
     </tr>
   `).join('');
-  
+
   updateTotals();
   updatePartyList();
   document.getElementById('entryCount').textContent = filtered.length;
@@ -255,7 +254,7 @@ function editEntry(sr) {
 
 function delEntry(sr) {
   if (confirm('Delete કરવું છે?')) {
-    data = data.filter(d => d.sr !== sr);
+    data = data.filter(d => d.sr!== sr);
     localStorage.setItem('rokadData', JSON.stringify(data));
     renderTable();
   }
@@ -265,11 +264,11 @@ function updateTotals() {
   let rokad = 0, gpay = 0;
   data.forEach(d => {
     if (d.aavakjavak === 'Aavak') {
-      rokad += d.rokadAmount;
-      gpay += d.gpayAmount;
+      rokad += d.rokadAmount || 0;
+      gpay += d.gpayAmount || 0;
     } else {
-      rokad -= d.rokadAmount;
-      gpay -= d.gpayAmount;
+      rokad -= d.rokadAmount || 0;
+      gpay -= d.gpayAmount || 0;
     }
   });
   document.getElementById('rokadTotal').textContent = '₹ ' + rokad.toFixed(2);
@@ -279,7 +278,7 @@ function updateTotals() {
 
 function updatePartyList() {
   const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
-  document.getElementById('filterParty').innerHTML = '<option value="">All Party</option>' + 
+  document.getElementById('filterParty').innerHTML = '<option value="">All Party</option>' +
     parties.map(p => `<option>${p}</option>`).join('');
 }
 
@@ -289,7 +288,7 @@ function exportExcel() {
   filtered.forEach(d => {
     csv += `${formatDate(d.date)},${d.type},${d.aavakjavak},${d.vehicleType},${d.rokadAmount},${d.gpayAmount},${d.amount},${d.party},${d.details}\n`;
   });
-  const blob = new Blob([csv], {type: 'text/csv'});
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'RokadLedger.csv'; a.click();
@@ -297,14 +296,12 @@ function exportExcel() {
 
 function exportPDF() {
   let filtered = getFilteredData();
-  
   let ra=0, rj=0, ga=0, gj=0;
   filtered.forEach(d => {
-    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
-    else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
+    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+    else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
   });
-  
-  // HTML ટેબલ બનાવ
+
   let html = `
     <div style="font-family: Arial, sans-serif; padding: 20px;">
       <h2 style="text-align:center;margin:0 0 10px 0;">ROKAD & GPAY LEDGER</h2>
@@ -327,7 +324,7 @@ function exportPDF() {
           </tr>
         </thead>
         <tbody>`;
-  
+
   filtered.forEach((d, i) => {
     html += `
       <tr>
@@ -336,15 +333,14 @@ function exportPDF() {
         <td style="border:1px solid #333;padding:4px;">${d.type}</td>
         <td style="border:1px solid #333;padding:4px;">${d.aavakjavak}</td>
         <td style="border:1px solid #333;padding:4px;">${d.vehicleType}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${d.rokadAmount.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${d.gpayAmount.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${d.amount.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(d.rokadAmount||0).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(d.gpayAmount||0).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:4px;text-align:right;">${(d.amount||0).toFixed(2)}</td>
         <td style="border:1px solid #333;padding:4px;">${d.party}</td>
         <td style="border:1px solid #333;padding:4px;">${d.details}</td>
       </tr>`;
   });
-  
-  // નીચે 3 ટોટલ રો
+
   html += `
       <tr style="background:#f1f5f9;font-weight:bold;">
         <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">TOTAL AAVAK</td>
@@ -368,8 +364,7 @@ function exportPDF() {
         <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
       </tr>
     </tbody></table></div>`;
-  
-  // PDF બનાવ
+
   const opt = {
     margin: 5,
     filename: 'RokadLedger.pdf',
@@ -377,10 +372,8 @@ function exportPDF() {
     html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
   };
-  
+
   html2pdf().from(html).set(opt).save();
-}
-    
 }
 
 function backupData() {
@@ -400,6 +393,8 @@ function restoreData() {
     reader.onload = ev => {
       try {
         data = JSON.parse(ev.target.result);
+        // sr નંબર ફિક્સ કર જો ન હોય તો
+        data = data.map((d, i) => ({...d, sr: d.sr || i + 1}));
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
         alert('Data Restore થઈ ગયું.\nTotal: ' + data.length + '\nAavak: ' + data.filter(d => d.aavakjavak === 'Aavak').length + '\nJavak: ' + data.filter(d => d.aavakjavak === 'Javak').length);
@@ -415,17 +410,17 @@ function restoreData() {
 function showPartyLedger() {
   const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
   let html = '<table style="width:100%;border-collapse:collapse;"><tr style="background:#334155;color:white;"><th style="padding:8px;border:1px solid #ddd;">Party Name</th><th style="padding:8px;border:1px solid #ddd;">Rokad Aavak</th><th style="padding:8px;border:1px solid #ddd;">Rokad Javak</th><th style="padding:8px;border:1px solid #ddd;">GPay Aavak</th><th style="padding:8px;border:1px solid #ddd;">GPay Javak</th><th style="padding:8px;border:1px solid #ddd;">Balance</th></tr>';
-  
+
   parties.forEach(p => {
     let ra=0, rj=0, ga=0, gj=0;
     data.filter(d => d.party === p).forEach(d => {
-      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
-      else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
+      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+      else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
     });
     html += `<tr><td style="padding:8px;border:1px solid #ddd;">${p}</td><td style="padding:8px;border:1px solid #ddd;">${ra.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${rj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${ga.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${gj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">${(ra-rj+ga-gj).toFixed(2)}</td></tr>`;
   });
   html += '</table>';
-  
+
   document.getElementById('modalTitle').textContent = 'Party Ledger';
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('reportModal').style.display = 'block';
@@ -435,10 +430,10 @@ function showFullReport() {
   let filtered = getFilteredData();
   let ra=0, rj=0, ga=0, gj=0;
   filtered.forEach(d => {
-    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
-    else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
+    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+    else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
   });
-  
+
   let html = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px;">
       <div style="background:#fef3c7;padding:15px;border-radius:8px;">
@@ -458,7 +453,7 @@ function showFullReport() {
     <h3 style="color:#059669;">Grand Total Balance: ₹ ${(ra-rj+ga-gj).toFixed(2)}</h3>
     <button style="background:#dc2626;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;" onclick="exportPDF()">Download PDF Report</button>
   `;
-  
+
   document.getElementById('modalTitle').textContent = 'Full Report';
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('reportModal').style.display = 'block';
