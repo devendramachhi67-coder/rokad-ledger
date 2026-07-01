@@ -323,10 +323,27 @@ function restoreData() {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = ev => {
-      data = JSON.parse(ev.target.result);
-      localStorage.setItem('rokadData', JSON.stringify(data));
-      renderTable();
-      alert('Data Restore થઈ ગયું');
+      try {
+        let rawData = JSON.parse(ev.target.result);
+
+        // જૂના બેકઅપ માટે ફીલ્ડ મેપિંગ ફિક્સ
+        data = rawData.map(d => ({
+          id: d.id || Date.now() + Math.random(),
+          date: d.date || '',
+          type: d.type || 'Rokad',
+          aj: d.aj || d.aavakJavak || d['Aavak/Javak'] || 'Aavak',
+          vehicle: d.vehicle || d.vehicleType || d['Vehicle Type'] || '',
+          amount: parseFloat(d.amount) || 0,
+          party: d.party || d.partyName || d['Party Name'] || '',
+          details: d.details || d.Details || ''
+        }));
+
+        localStorage.setItem('rokadData', JSON.stringify(data));
+        renderTable();
+        alert('Data Restore થઈ ગયું. Total ' + data.length + ' entries');
+      } catch(err) {
+        alert('ફાઈલમાં કંઈક ખોટું છે: ' + err.message);
+      }
     };
     reader.readAsText(file);
   };
