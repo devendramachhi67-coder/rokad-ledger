@@ -10,46 +10,49 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-   .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-   .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-   .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-   .rokad { background: #ea580c; }
-   .gpay { background: #7c3aed; }
-   .total { background: #059669; }
-   .card.label { font-size: 11px; opacity: 0.9; }
-   .card.amount { font-size: 16px; margin-top: 4px; }
+  .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+  .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+  .rokad { background: #ea580c; }
+  .gpay { background: #7c3aed; }
+  .total { background: #059669; }
+  .card.label { font-size: 11px; opacity: 0.9; }
+  .card.amount { font-size: 16px; margin-top: 4px; }
     
-   .toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-   .toolbar button,.toolbar input,.toolbar select { 
-      padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; 
-      background: white; cursor: pointer;
+  .toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .toolbar button,.toolbar input,.toolbar select { 
+      padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; 
+      background: white; cursor: pointer; height: 36px;
     }
-   .toolbar button { color: white; border: none; font-weight: 600; }
-   .btn-new { background: #f97316; }
-   .btn-party { background: #8b5cf6; }
-   .btn-report { background: #06b6d4; }
-   .btn-excel { background: #10b981; }
-   .btn-backup { background: #059669; }
-   .btn-restore { background: #ea580c; }
+  .toolbar button { color: white; border: none; font-weight: 600; }
+  .btn-new { background: #f97316; }
+  .btn-party { background: #8b5cf6; }
+  .btn-report { background: #06b6d4; }
+  .btn-excel { background: #10b981; }
+  .btn-backup { background: #059669; }
+  .btn-restore { background: #ea580c; }
     
-   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filters { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 2fr; gap: 6px; margin-bottom: 8px; }
+    @media (max-width: 768px) {.filters { grid-template-columns: 1fr 1fr; } }
+    
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
     
-   .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-   .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+  .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-   .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; 
+  .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; 
       font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-   .search-box { width: 100%; margin-bottom: 8px; padding: 6px; }
-   .table-wrap { max-height: 400px; overflow: auto; }
-   .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; }
-   .edit { background: #3b82f6; color: white; }
-   .del { background: #ef4444; color: white; }
+  .search-box { width: 100%; margin-bottom: 8px; padding: 6px; }
+  .table-wrap { max-height: 450px; overflow: auto; }
+  .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+  .edit { background: #3b82f6; color: white; }
+  .del { background: #ef4444; color: white; }
   </style>
 </head>
 <body>
@@ -58,33 +61,36 @@
   <div class="totals">
     <div class="card rokad">
       <div class="label">ROKAD</div>
-      <div class="amount" id="rokadTotal">₹ 0</div>
+      <div class="amount" id="rokadTotal">₹ 0.00</div>
     </div>
     <div class="card gpay">
       <div class="label">GPAY</div>
-      <div class="amount" id="gpayTotal">₹ 0</div>
+      <div class="amount" id="gpayTotal">₹ 0.00</div>
     </div>
     <div class="card total">
       <div class="label">TOTAL</div>
-      <div class="amount" id="grandTotal">₹ 0</div>
+      <div class="amount" id="grandTotal">₹ 0.00</div>
     </div>
   </div>
 
   <div class="toolbar">
     <button class="btn-new" onclick="resetForm()">New Entry</button>
-    <button class="btn-party" onclick="alert('Party Ledger આવશે')">Party Ledger</button>
-    <button class="btn-report" onclick="alert('Full Report આવશે')">Full Report Preview</button>
+    <button class="btn-party" onclick="showPartyLedger()">Party Ledger</button>
+    <button class="btn-report" onclick="showFullReport()">Full Report</button>
     <button class="btn-excel" onclick="exportExcel()">Excel</button>
     <button class="btn-backup" onclick="backupData()">Backup Now</button>
     <button class="btn-restore" onclick="restoreData()">Data Restore</button>
+  </div>
+
+  <div class="filters">
     <input type="date" id="filterDate1">
     <input type="date" id="filterDate2">
-    <select id="filterType">
+    <select id="filterType" onchange="renderTable()">
       <option value="">Aavak+Javak</option>
       <option value="Aavak">Aavak</option>
       <option value="Javak">Javak</option>
     </select>
-    <select id="filterParty"><option value="">All Party</option></select>
+    <select id="filterParty" onchange="renderTable()"><option value="">All Party</option></select>
     <input type="text" id="searchBox" placeholder="🔍 Search All Columns..." onkeyup="renderTable()">
   </div>
 
@@ -164,8 +170,14 @@ function resetForm() {
 function renderTable() {
   const tbody = document.getElementById('dataTable');
   const search = document.getElementById('searchBox').value.toLowerCase();
+  const filterType = document.getElementById('filterType').value;
+  const filterParty = document.getElementById('filterParty').value;
+  
   let filtered = data.filter(d => {
-    return JSON.stringify(d).toLowerCase().includes(search);
+    let match = JSON.stringify(d).toLowerCase().includes(search);
+    if (filterType && d.aj!== filterType) match = false;
+    if (filterParty && d.party!== filterParty) match = false;
+    return match;
   });
   
   tbody.innerHTML = filtered.map((d, i) => `
@@ -175,9 +187,9 @@ function renderTable() {
       <td>${d.type}</td>
       <td>${d.aj}</td>
       <td>${d.vehicle}</td>
-      <td>${d.type==='Rokad'?d.amount:0}</td>
-      <td>${d.type==='GPay'?d.amount:0}</td>
-      <td>${d.amount}</td>
+      <td>${d.type==='Rokad'?d.amount.toFixed(2):'0.00'}</td>
+      <td>${d.type==='GPay'?d.amount.toFixed(2):'0.00'}</td>
+      <td>${d.amount.toFixed(2)}</td>
       <td>${d.party}</td>
       <td>${d.details}</td>
       <td>
@@ -202,6 +214,7 @@ function editEntry(id) {
   document.getElementById('party').value = d.party;
   document.getElementById('details').value = d.details;
   editId = id;
+  window.scrollTo(0,0);
 }
 
 function delEntry(id) {
@@ -268,6 +281,14 @@ function restoreData() {
     reader.readAsText(file);
   };
   input.click();
+}
+
+function showPartyLedger() {
+  alert('Party Ledger: બધી પાર્ટીનો હિસાબ અલગથી જોવા માટે. આગળના વર્ઝનમાં ફુલ રિપોર્ટ એડ કરીશું');
+}
+
+function showFullReport() {
+  alert('Full Report: તારીખ વાઈઝ, પાર્ટી વાઈઝ રિપોર્ટ. આગળના વર્ઝનમાં PDF એડ કરીશું');
 }
 
 document.getElementById('details').addEventListener('keypress', e => {
