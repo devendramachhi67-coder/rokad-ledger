@@ -297,23 +297,87 @@ function exportExcel() {
 
 function exportPDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const doc = new jsPDF('l', 'mm', 'a4'); // Landscape મોડ જેથી બધા કોલમ આવે
   let filtered = getFilteredData();
   
-  doc.setFontSize(16);
-  doc.text('ROKAD & GPAY LEDGER', 105, 15, { align: 'center' });
+  doc.setFontSize(18);
+  doc.text('ROKAD & GPAY LEDGER', 148, 15, { align: 'center' });
   
-  const tableData = filtered.map((d, i) => [
-    i+1, formatDate(d.date), d.type, d.aavakjavak, d.vehicleType,
-    d.rokadAmount.toFixed(2), d.gpayAmount.toFixed(2), d.amount.toFixed(2), d.party, d.details
+  doc.setFontSize(10);
+  doc.text(`Date: ${new Date().getDate()}-${new Date().getMonth()+1}-${String(new Date().getFullYear()).slice(-2)}`, 15, 22);
+  doc.text(`Total Entries: ${filtered.length}`, 260, 22, { align: 'right' });
+  
+  let ra=0, rj=0, ga=0, gj=0;
+  const tableData = filtered.map((d, i) => {
+    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount; ga+=d.gpayAmount; }
+    else { rj+=d.rokadAmount; gj+=d.gpayAmount; }
+    
+    return [
+      i+1, 
+      formatDate(d.date), 
+      d.type, 
+      d.aavakjavak, 
+      d.vehicleType,
+      d.rokadAmount.toFixed(2),
+      d.gpayAmount.toFixed(2),
+      d.amount.toFixed(2), 
+      d.party, 
+      d.details
+    ];
+  });
+  
+  // ટોટલ રો એડ કર
+  tableData.push([
+    '', '', '', '', 'TOTAL', 
+    ra.toFixed(2), 
+    ga.toFixed(2), 
+    (ra+ga).toFixed(2), 
+    '', ''
+  ]);
+  tableData.push([
+    '', '', '', '', 'JAVAK TOTAL', 
+    rj.toFixed(2), 
+    gj.toFixed(2), 
+    (rj+gj).toFixed(2), 
+    '', ''
+  ]);
+  tableData.push([
+    '', '', '', '', 'BALANCE', 
+    (ra-rj).toFixed(2), 
+    (ga-gj).toFixed(2), 
+    (ra-rj+ga-gj).toFixed(2), 
+    '', ''
   ]);
   
   doc.autoTable({
     head: [['Sr', 'Date', 'Type', 'A/J', 'Vehicle', 'Rokad', 'GPay', 'Total', 'Party', 'Details']],
     body: tableData,
-    startY: 25,
-    styles: { fontSize: 8 },
-    headStyles: { fillColor: [51, 65, 85] }
+    startY: 28,
+    styles: { fontSize: 8, cellPadding: 2, font: 'helvetica' },
+    headStyles: { fillColor: [51, 65, 85], textColor: 255, fontStyle: 'bold' },
+    columnStyles: {
+      0: { cellWidth: 10 },  // Sr
+      1: { cellWidth: 18 },  // Date
+      2: { cellWidth: 15 },  // Type
+      3: { cellWidth: 15 },  // A/J
+      4: { cellWidth: 25 },  // Vehicle
+      5: { cellWidth: 20, halign: 'right' },  // Rokad
+      6: { cellWidth: 20, halign: 'right' },  // GPay
+      7: { cellWidth: 20, halign: 'right' },  // Total
+      8: { cellWidth: 40 },  // Party
+      9: { cellWidth: 'auto' } // Details
+    },
+    didParseCell: function(data) {
+      // ટોટલ રો બોલ્ડ અને બેકગ્રાઉન્ડ કલર
+      if (data.row.index >= tableData.length - 3) {
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.fillColor = [241, 245, 249];
+        if (data.row.index === tableData.length - 1) {
+          data.cell.styles.fillColor = [209, 250, 229];
+          data.cell.styles.textColor = [5, 150, 105];
+        }
+      }
+    }
   });
   
   doc.save('RokadLedger.pdf');
