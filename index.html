@@ -11,35 +11,35 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-   .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-   .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-   .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-   .rokad { background: #ea580c; }
-   .gpay { background: #7c3aed; }
-   .total { background: #059669; }
-   .card.label { font-size: 11px; opacity: 0.9; }
-   .card.amount { font-size: 16px; margin-top: 4px; }
-   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
-   .main-grid.full { grid-template-columns: 1fr; }
-   .main-grid.full.panel:first-child { display: none; }
+  .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+  .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+  .rokad { background: #ea580c; }
+  .gpay { background: #7c3aed; }
+  .total { background: #059669; }
+  .card.label { font-size: 11px; opacity: 0.9; }
+  .card.amount { font-size: 16px; margin-top: 4px; }
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
+  .main-grid.full { grid-template-columns: 1fr; }
+  .main-grid.full.panel:first-child { display: none; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
-   .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-   .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+  .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-   .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
+  .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-   .table-wrap { max-height: 450px; overflow: auto; }
-   .full.table-wrap { max-height: 75vh; }
-   .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
-   .edit { background: #3b82f6; color: white; }
-   .del { background: #ef4444; color: white; }
-   .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-   .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
-   .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-   .close:hover { color: #000; }
+  .table-wrap { max-height: 450px; overflow: auto; }
+  .full.table-wrap { max-height: 75vh; }
+  .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+  .edit { background: #3b82f6; color: white; }
+  .del { background: #ef4444; color: white; }
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+  .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
+  .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+  .close:hover { color: #000; }
   </style>
 </head>
 <body>
@@ -136,7 +136,7 @@ function formatDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d)) return dateStr;
-  return `${d.getDate()}-${d.getMonth()+1}-${String(d.getFullYear()).slice(-2)}`;
+  return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`; // 1-7-2026 ફોર્મેટ
 }
 
 function toggleScreen() {
@@ -200,7 +200,7 @@ function getFilteredData() {
   const d1 = document.getElementById('filterDate1').value;
   const d2 = document.getElementById('filterDate2').value;
 
-  return data.filter(d => {
+  let filtered = data.filter(d => {
     let match = JSON.stringify(d).toLowerCase().includes(search);
     if (filterType && d.aavakjavak!== filterType) match = false;
     if (filterParty && d.party!== filterParty) match = false;
@@ -208,13 +208,23 @@ function getFilteredData() {
     if (d2 && d.date > d2) match = false;
     return match;
   });
+
+  // તારીખ પ્રમાણે સોર્ટ કર - જૂનીથી નવી
+  filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+  return filtered;
 }
 
 function renderTable() {
   const tbody = document.getElementById('dataTable');
   let filtered = getFilteredData();
 
-  tbody.innerHTML = filtered.map((d, i) => `
+  let ra=0, rj=0, ga=0, gj=0;
+
+  tbody.innerHTML = filtered.map((d, i) => {
+    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+    else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+
+    return `
     <tr>
       <td>${i+1}</td>
       <td>${formatDate(d.date)}</td>
@@ -230,8 +240,34 @@ function renderTable() {
         <button class="action-btn edit" onclick="editEntry(${d.sr})">E</button>
         <button class="action-btn del" onclick="delEntry(${d.sr})">D</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
+
+  // ટેબલ નીચે ટોટલ રો એડ કર
+  if(filtered.length > 0) {
+    tbody.innerHTML += `
+      <tr style="background:#fef3c7;font-weight:bold;">
+        <td colspan="5" style="text-align:right;">AAVAK TOTAL</td>
+        <td>${ra.toFixed(2)}</td>
+        <td>${ga.toFixed(2)}</td>
+        <td>${(ra+ga).toFixed(2)}</td>
+        <td colspan="3"></td>
+      </tr>
+      <tr style="background:#fee2e2;font-weight:bold;">
+        <td colspan="5" style="text-align:right;">JAVAK TOTAL</td>
+        <td>${rj.toFixed(2)}</td>
+        <td>${gj.toFixed(2)}</td>
+        <td>${(rj+gj).toFixed(2)}</td>
+        <td colspan="3"></td>
+      </tr>
+      <tr style="background:#d1fae5;font-weight:bold;color:#059669;">
+        <td colspan="5" style="text-align:right;">BALANCE</td>
+        <td>${(ra-rj).toFixed(2)}</td>
+        <td>${(ga-gj).toFixed(2)}</td>
+        <td>${(ra-rj+ga-gj).toFixed(2)}</td>
+        <td colspan="3"></td>
+      </tr>`;
+  }
 
   updateTotals();
   updatePartyList();
@@ -393,7 +429,6 @@ function restoreData() {
     reader.onload = ev => {
       try {
         data = JSON.parse(ev.target.result);
-        // sr નંબર ફિક્સ કર જો ન હોય તો
         data = data.map((d, i) => ({...d, sr: d.sr || i + 1}));
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
