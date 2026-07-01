@@ -251,7 +251,8 @@ function delEntry(id) {
 function updateTotals() {
   let rokad = 0, gpay = 0;
   data.forEach(d => {
-    if (d.aj === 'Aavak') {
+    let isAavak = d.aj === 'Aavak' || d.aj === 'aavak' || d.aj === 'આવક';
+    if (isAavak) {
       if (d.type === 'Rokad') rokad += d.amount;
       if (d.type === 'GPay') gpay += d.amount;
     } else {
