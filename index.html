@@ -258,7 +258,7 @@ function delEntry(id) {
 function updateTotals() {
   let rokad = 0, gpay = 0;
   data.forEach(d => {
-    let isAavak = d.aj === 'Aavak' || d.aj === 'aavak' || d.aj === 'આવક';
+    let isAavak = d.aj === 'Aavak';
     if (isAavak) {
       if (d.type === 'Rokad') rokad += d.amount;
       if (d.type === 'GPay') gpay += d.amount;
@@ -324,7 +324,7 @@ function backupData() {
   alert('Backup Download થઈ ગયું');
 }
 
-  function restoreData() {
+function restoreData() {
   const input = document.createElement('input');
   input.type = 'file'; input.accept = '.json';
   input.onchange = e => {
@@ -335,57 +335,38 @@ function backupData() {
         let rawData = JSON.parse(ev.target.result);
 
         data = rawData.map(d => {
-          // 1. Aavak/Javak ના બધા જૂના નામ ચેક કર
-          let ajValue = d.aj || d.aavakJavak || d['Aavak/Javak'] || d['A/J'] || d.type2 || d.transactionType || d['Transaction Type'] || 'Aavak';
-          ajValue = String(ajValue).trim().toLowerCase();
-
-          // 2. Javak ના બધા વેરિએશન
-          if (ajValue.includes('javak') || ajValue.includes('જાવક') || ajValue === 'j' || ajValue === '2' || ajValue === 'debit' || ajValue === 'expense' || ajValue === 'out') {
+          // તારા જૂના ફોર્મેટ મુજબ મેપિંગ
+          let ajValue = d.aavakjavak || d.aj || d['A/J'] || 'Aavak';
+          ajValue = String(ajValue).trim();
+          if (ajValue.toLowerCase() === 'javak' || ajValue === 'જાવક') {
             ajValue = 'Javak';
           } else {
             ajValue = 'Aavak';
           }
 
-          // 3. તારીખ કન્વર્ટ કર - DD-MM-YYYY ને YYYY-MM-DD માં
-          let dateVal = d.date || d.Date || '';
-          if (dateVal.includes('-') && dateVal.split('-')[0].length <= 2) {
-            let parts = dateVal.split('-');
-            if (parts.length === 3) {
-              dateVal = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-            }
-          }
-
-          // 4. Amount નેગેટિવ હોય તો Javak
-          let amt = parseFloat(d.amount || d.Amount || d['Total'] || 0);
-          if (amt < 0) {
-            ajValue = 'Javak';
-            amt = Math.abs(amt);
-          }
-
           return {
-            id: d.id || Date.now() + Math.random(),
-            date: dateVal,
-            type: d.type || d.Type || d.paymentType || d['Payment Type'] || 'Rokad',
+            id: d.id || d.sr || Date.now() + Math.random(),
+            date: d.date || '',
+            type: d.type || 'Rokad',
             aj: ajValue,
-            vehicle: d.vehicle || d.vehicleType || d['Vehicle Type'] || d.Vehicle || '',
-            amount: amt,
-            party: d.party || d.partyName || d['Party Name'] || d.Party || d.customer || '',
-            details: d.details || d.Details || d.description || d.Description || d.remarks || d.Remarks || ''
+            vehicle: d.vehicleType || d.vehicle || '',
+            amount: parseFloat(d.amount || d.rokadAmount || d.gpayAmount || 0),
+            party: d.party || '',
+            details: d.details || ''
           };
         });
 
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
-        alert('Data Restore થઈ ગયું. Total ' + data.length + ' entries');
+        alert('Data Restore થઈ ગયું.\nTotal: ' + data.length + ' entries\nAavak: ' + data.filter(d => d.aj === 'Aavak').length + '\nJavak: ' + data.filter(d => d.aj === 'Javak').length);
       } catch(err) {
-        alert('ફાઈલમાં કંઈક ખોટું છે: ' + err.message);
+        alert('Error: ' + err.message);
       }
     };
     reader.readAsText(file);
   };
   input.click();
 }
-
 
 function showPartyLedger() {
   const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
