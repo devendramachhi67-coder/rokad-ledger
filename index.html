@@ -11,39 +11,48 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-  .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-  .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-  .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-  .rokad { background: #ea580c; }
-  .gpay { background: #7c3aed; }
-  .total { background: #059669; }
-  .card.label { font-size: 11px; opacity: 0.9; }
-  .card.amount { font-size: 16px; margin-top: 4px; }
-  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
-  .main-grid.full { grid-template-columns: 1fr; }
-  .main-grid.full.panel:first-child { display: none; }
+   .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+   .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+   .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+   .rokad { background: #ea580c; }
+   .gpay { background: #7c3aed; }
+   .total { background: #059669; }
+   .card.label { font-size: 11px; opacity: 0.9; }
+   .card.amount { font-size: 16px; margin-top: 4px; }
+   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
+   .main-grid.full { grid-template-columns: 1fr; }
+   .main-grid.full.panel:first-child { display: none; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
-  .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-  .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+   .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+   .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-  .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
+   .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-  .table-wrap { max-height: 450px; overflow: auto; }
-  .full.table-wrap { max-height: 75vh; }
-  .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
-  .edit { background: #3b82f6; color: white; }
-  .del { background: #ef4444; color: white; }
-  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-  .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
-  .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-  .close:hover { color: #000; }
+   .table-wrap { max-height: 450px; overflow: auto; }
+   .full.table-wrap { max-height: 75vh; }
+   .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+   .edit { background: #3b82f6; color: white; }
+   .del { background: #ef4444; color: white; }
+   .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+   .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
+   .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+   .close:hover { color: #000; }
+   .auto-backup { background: #0ea5e9!important; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100% {opacity: 1;} 50% {opacity: 0.7;} }
+
+    @media print {
+      body { background: white; }
+     .btn-save, button,.header,.totals,.main-grid.panel:first-child, div[style*="display:flex"] { display: none!important; }
+      table { font-size: 14px!important; }
+      th, td { padding: 8px!important; border: 1px solid #000!important; }
+    }
   </style>
 </head>
 <body>
-  <div class="header">ROKAD & GPAY LEDGER</div>
+  <div class="header">ROKAD & GPAY LEDGER <span id="autoBackupStatus" style="font-size:10px;color:#059669;"></span></div>
 
   <div class="totals">
     <div class="card rokad">
@@ -66,9 +75,10 @@
     <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="showFullReport()">Full Report</button>
     <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="exportExcel()">Excel</button>
     <button style="background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="exportPDF()">PDF</button>
-    <button style="background:#059669;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="backupData()">Backup</button>
+    <button id="backupBtn" style="background:#059669;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="backupData()">Backup</button>
     <button style="background:#ea580c;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="restoreData()">Restore</button>
     <button id="screenBtn" style="background:#475569;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="toggleScreen()">Full Screen</button>
+    <button style="background:#0284c7;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;font-size:13px;" onclick="window.print()">🖨️ Print</button>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 2fr;gap:6px;margin-bottom:8px;">
@@ -114,7 +124,7 @@
           <tbody id="dataTable"></tbody>
         </table>
       </div>
-      <div style="font-size: 11px; margin-top: 6px;">Total: <span id="entryCount">0</span> entries</div>
+      <div style="font-size: 11px; margin-top: 6px;">Total: <span id="entryCount">0</span> entries | Last Auto Backup: <span id="lastBackup">Never</span></div>
     </div>
   </div>
 
@@ -132,11 +142,32 @@ let editId = null;
 let isFullScreen = false;
 document.getElementById('date').valueAsDate = new Date();
 
+// ઓટો બેકઅપ - દર 5 મિનિટે
+setInterval(autoBackup, 300000);
+checkLastBackup();
+
 function formatDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d)) return dateStr;
   return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`; // 1-7-2026 ફોર્મેટ
+}
+
+function autoBackup() {
+  if(data.length === 0) return;
+  const backup = JSON.stringify({data: data, timestamp: new Date().toISOString()});
+  localStorage.setItem('autoBackup', backup);
+  document.getElementById('lastBackup').textContent = new Date().toLocaleTimeString();
+  document.getElementById('autoBackupStatus').textContent = '● Auto Saved';
+  setTimeout(() => document.getElementById('autoBackupStatus').textContent = '', 2000);
+}
+
+function checkLastBackup() {
+  const last = localStorage.getItem('autoBackup');
+  if(last) {
+    const time = JSON.parse(last).timestamp;
+    document.getElementById('lastBackup').textContent = new Date(time).toLocaleString();
+  }
 }
 
 function toggleScreen() {
@@ -180,6 +211,7 @@ function saveEntry() {
     data.push(entry);
   }
   localStorage.setItem('rokadData', JSON.stringify(data));
+  autoBackup();
   resetForm();
   renderTable();
 }
@@ -209,7 +241,6 @@ function getFilteredData() {
     return match;
   });
 
-  // તારીખ પ્રમાણે સોર્ટ કર - જૂનીથી નવી
   filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
   return filtered;
 }
@@ -243,7 +274,6 @@ function renderTable() {
     </tr>`;
   }).join('');
 
-  // ટેબલ નીચે ટોટલ રો એડ કર
   if(filtered.length > 0) {
     tbody.innerHTML += `
       <tr style="background:#fef3c7;font-weight:bold;">
@@ -292,6 +322,7 @@ function delEntry(sr) {
   if (confirm('Delete કરવું છે?')) {
     data = data.filter(d => d.sr!== sr);
     localStorage.setItem('rokadData', JSON.stringify(data));
+    autoBackup();
     renderTable();
   }
 }
@@ -340,23 +371,23 @@ function exportPDF() {
 
   let html = `
     <div style="font-family: Arial, sans-serif; padding: 20px;">
-      <h2 style="text-align:center;margin:0 0 10px 0;">ROKAD & GPAY LEDGER</h2>
-      <p style="text-align:right;font-size:12px;margin:0 0 10px 0;">
+      <h2 style="text-align:center;margin:0 0 15px 0;font-size:22px;">ROKAD & GPAY LEDGER</h2>
+      <p style="text-align:right;font-size:14px;margin:0 0 15px 0;">
         Date: ${formatDate(new Date().toISOString().split('T')[0])} | Total Entries: ${filtered.length}
       </p>
-      <table style="width:100%;border-collapse:collapse;font-size:10px;">
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
         <thead>
           <tr style="background:#334155;color:white;">
-            <th style="border:1px solid #333;padding:4px;">Sr</th>
-            <th style="border:1px solid #333;padding:4px;">Date</th>
-            <th style="border:1px solid #333;padding:4px;">Type</th>
-            <th style="border:1px solid #333;padding:4px;">A/J</th>
-            <th style="border:1px solid #333;padding:4px;">Vehicle</th>
-            <th style="border:1px solid #333;padding:4px;">Rokad</th>
-            <th style="border:1px solid #333;padding:4px;">GPay</th>
-            <th style="border:1px solid #333;padding:4px;">Total</th>
-            <th style="border:1px solid #333;padding:4px;">Party</th>
-            <th style="border:1px solid #333;padding:4px;">Details</th>
+            <th style="border:1px solid #333;padding:8px;">Sr</th>
+            <th style="border:1px solid #333;padding:8px;">Date</th>
+            <th style="border:1px solid #333;padding:8px;">Type</th>
+            <th style="border:1px solid #333;padding:8px;">A/J</th>
+            <th style="border:1px solid #333;padding:8px;">Vehicle</th>
+            <th style="border:1px solid #333;padding:8px;">Rokad</th>
+            <th style="border:1px solid #333;padding:8px;">GPay</th>
+            <th style="border:1px solid #333;padding:8px;">Total</th>
+            <th style="border:1px solid #333;padding:8px;">Party</th>
+            <th style="border:1px solid #333;padding:8px;">Details</th>
           </tr>
         </thead>
         <tbody>`;
@@ -364,48 +395,48 @@ function exportPDF() {
   filtered.forEach((d, i) => {
     html += `
       <tr>
-        <td style="border:1px solid #333;padding:4px;">${i+1}</td>
-        <td style="border:1px solid #333;padding:4px;">${formatDate(d.date)}</td>
-        <td style="border:1px solid #333;padding:4px;">${d.type}</td>
-        <td style="border:1px solid #333;padding:4px;">${d.aavakjavak}</td>
-        <td style="border:1px solid #333;padding:4px;">${d.vehicleType}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(d.rokadAmount||0).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(d.gpayAmount||0).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(d.amount||0).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;">${d.party}</td>
-        <td style="border:1px solid #333;padding:4px;">${d.details}</td>
+        <td style="border:1px solid #333;padding:8px;">${i+1}</td>
+        <td style="border:1px solid #333;padding:8px;">${formatDate(d.date)}</td>
+        <td style="border:1px solid #333;padding:8px;">${d.type}</td>
+        <td style="border:1px solid #333;padding:8px;">${d.aavakjavak}</td>
+        <td style="border:1px solid #333;padding:8px;">${d.vehicleType}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(d.rokadAmount||0).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(d.gpayAmount||0).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(d.amount||0).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;">${d.party}</td>
+        <td style="border:1px solid #333;padding:8px;">${d.details}</td>
       </tr>`;
   });
 
   html += `
-      <tr style="background:#f1f5f9;font-weight:bold;">
-        <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">TOTAL AAVAK</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${ra.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${ga.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ra+ga).toFixed(2)}</td>
-        <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
+      <tr style="background:#f1f5f9;font-weight:bold;font-size:15px;">
+        <td colspan="5" style="border:1px solid #333;padding:8px;text-align:right;">TOTAL AAVAK</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${ra.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${ga.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(ra+ga).toFixed(2)}</td>
+        <td colspan="2" style="border:1px solid #333;padding:8px;"></td>
       </tr>
-      <tr style="background:#f1f5f9;font-weight:bold;">
-        <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">TOTAL JAVAK</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${rj.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${gj.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(rj+gj).toFixed(2)}</td>
-        <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
+      <tr style="background:#f1f5f9;font-weight:bold;font-size:15px;">
+        <td colspan="5" style="border:1px solid #333;padding:8px;text-align:right;">TOTAL JAVAK</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${rj.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${gj.toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(rj+gj).toFixed(2)}</td>
+        <td colspan="2" style="border:1px solid #333;padding:8px;"></td>
       </tr>
-      <tr style="background:#d1fae5;font-weight:bold;color:#059669;">
-        <td colspan="5" style="border:1px solid #333;padding:4px;text-align:right;">FINAL BALANCE</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ra-rj).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ga-gj).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:4px;text-align:right;">${(ra-rj+ga-gj).toFixed(2)}</td>
-        <td colspan="2" style="border:1px solid #333;padding:4px;"></td>
+      <tr style="background:#d1fae5;font-weight:bold;color:#059669;font-size:16px;">
+        <td colspan="5" style="border:1px solid #333;padding:8px;text-align:right;">FINAL BALANCE</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(ra-rj).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(ga-gj).toFixed(2)}</td>
+        <td style="border:1px solid #333;padding:8px;text-align:right;">${(ra-rj+ga-gj).toFixed(2)}</td>
+        <td colspan="2" style="border:1px solid #333;padding:8px;"></td>
       </tr>
     </tbody></table></div>`;
 
   const opt = {
     margin: 5,
     filename: 'RokadLedger.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
+    image: { type: 'jpeg', quality: 1.0 },
+    html2canvas: { scale: 3, useCORS: true, letterRendering: true },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
   };
 
@@ -413,11 +444,20 @@ function exportPDF() {
 }
 
 function backupData() {
-  const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+  const backupObj = {
+    data: data,
+    timestamp: new Date().toISOString(),
+    version: '1.0'
+  };
+  const blob = new Blob([JSON.stringify(backupObj)], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'RokadBackup.json'; a.click();
-  alert('Backup Download થઈ ગયું');
+  a.href = url;
+  a.download = `RokadBackup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  document.getElementById('backupBtn').classList.add('auto-backup');
+  setTimeout(() => document.getElementById('backupBtn').classList.remove('auto-backup'), 3000);
+  alert('Backup Download થઈ ગયું! આ ફાઈલ Google Drive માં મેન્યુઅલી અપલોડ કરી દેજો.');
 }
 
 function restoreData() {
@@ -428,7 +468,8 @@ function restoreData() {
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        data = JSON.parse(ev.target.result);
+        const backup = JSON.parse(ev.target.result);
+        data = backup.data || backup;
         data = data.map((d, i) => ({...d, sr: d.sr || i + 1}));
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
