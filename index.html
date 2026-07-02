@@ -139,42 +139,7 @@
     </div>
   </div>
 
-  function forceFixData() {
-  if (!confirm('બધો જૂનો ડેટા ફિક્સ કરવો છે? undefined ગાયબ થઈ જશે.')) return;
   
-  let fixedCount = 0;
-  data = data.map((d, i) => {
-    const amt = parseFloat(d.amount || 0);
-    let t = (d.type || 'Rokad').toString().trim();
-    if (t === 'Bank' || t === 'Bane' || t === 'CASH') t = 'Rokad';
-    if (t === 'GPAY' || t === 'UPI') t = 'GPay';
-    
-    let aj = (d.aavakjavak || d.aj || 'Aavak').toString().trim();
-    if (aj === 'In' || aj === 'income' || aj === 'undefined') aj = 'Aavak';
-    if (aj === 'Out' || aj === 'expense') aj = 'Javak';
-    
-    let veh = (d.vehicleType || d.vehicle || '').toString().trim();
-    if (veh === 'undefined') veh = '';
-    
-    fixedCount++;
-    return {
-      sr: i + 1,
-      date: d.date || '',
-      type: t,
-      aavakjavak: aj,
-      vehicleType: veh,
-      rokadAmount: t === 'Rokad' ? amt : 0,
-      gpayAmount: t === 'GPay' ? amt : 0,
-      amount: amt,
-      party: d.party || '',
-      details: d.details || ''
-    };
-  });
-  
-  localStorage.setItem('rokadData', JSON.stringify(data));
-  renderTable();
-  alert('ડન! ' + fixedCount + ' એન્ટ્રી ફિક્સ થઈ. હવે બંધ કરીને ખોલ, પ્રોબ્લેમ નહીં આવે.');
-}
 <script>
 let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
 
@@ -656,6 +621,44 @@ document.getElementById('filterDate1').value = '';
 document.getElementById('filterDate2').value = '';
 document.getElementById('searchBox').value = '';
 renderTable();
+
+  function forceFixData() {
+  alert('બટન તો ચાલ્યું!'); // આ ટેસ્ટ માટે
+  if (!confirm('બધો જૂનો ડેટા ફિક્સ કરવો છે? undefined ગાયબ થઈ જશે.')) return;
+  
+  let fixedCount = 0;
+  data = data.map((d, i) => {
+    const amt = parseFloat(d.amount || 0);
+    let t = (d.type || 'Rokad').toString().trim();
+    if (t === 'Bank' || t === 'Bane' || t === 'CASH') t = 'Rokad';
+    if (t === 'GPAY' || t === 'UPI') t = 'GPay';
+    
+    let aj = (d.aavakjavak || d.aj || 'Aavak').toString().trim();
+    if (aj === 'In' || aj === 'income' || aj === 'undefined') aj = 'Aavak';
+    if (aj === 'Out' || aj === 'expense') aj = 'Javak';
+    
+    let veh = (d.vehicleType || d.vehicle || '').toString().trim();
+    if (veh === 'undefined') veh = '';
+    
+    fixedCount++;
+    return {
+      sr: i + 1,
+      date: d.date || '',
+      type: t,
+      aavakjavak: aj,
+      vehicleType: veh,
+      rokadAmount: t === 'Rokad' ? amt : 0,
+      gpayAmount: t === 'GPay' ? amt : 0,
+      amount: amt,
+      party: d.party || '',
+      details: d.details || ''
+    };
+  });
+  
+  localStorage.setItem('rokadData', JSON.stringify(data));
+  renderTable();
+  alert('ડન! ' + fixedCount + ' એન્ટ્રી ફિક્સ થઈ. હવે બંધ કરીને ખોલ, પ્રોબ્લેમ નહીં આવે.');
+}
 </script>
 </body>
 </html>
