@@ -11,42 +11,42 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
-  .header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
-  .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-  .card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
-  .rokad { background: #ea580c; }
-  .gpay { background: #7c3aed; }
-  .total { background: #059669; }
-  .card.label { font-size: 11px; opacity: 0.9; }
-  .card.amount { font-size: 16px; margin-top: 4px; }
-  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
-  .main-grid.full { grid-template-columns: 1fr; }
-  .main-grid.full.panel:first-child { display: none; }
+.header { text-align: center; font-weight: 700; font-size: 18px; margin-bottom: 8px; color: #1e293b; }
+.totals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.card { color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+.rokad { background: #ea580c; }
+.gpay { background: #7c3aed; }
+.total { background: #059669; }
+.card.label { font-size: 11px; opacity: 0.9; }
+.card.amount { font-size: 16px; margin-top: 4px; }
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
+.main-grid.full { grid-template-columns: 1fr; }
+.main-grid.full >.panel:first-child { display: none; }
     @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
-  .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-  .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
+.panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
     label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
     input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-  .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
+.btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
     th { background: #334155; color: white; font-size: 10px; }
-  .table-wrap { max-height: 450px; overflow: auto; }
-  .full.table-wrap { max-height: 75vh; }
-  .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
-  .edit { background: #3b82f6; color: white; }
-  .del { background: #ef4444; color: white; }
-  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-  .modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
-  .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-  .close:hover { color: #000; }
-  .auto-backup { background: #0ea5e9!important; animation: blink 2s infinite; }
+.table-wrap { max-height: 450px; overflow: auto; }
+.full.table-wrap { max-height: 75vh; }
+.action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
+.edit { background: #3b82f6; color: white; }
+.del { background: #ef4444; color: white; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
+.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close:hover { color: #000; }
+.auto-backup { background: #0ea5e9!important; animation: blink 2s infinite; }
     @keyframes blink { 0%,100% {opacity: 1;} 50% {opacity: 0.7;} }
 
     @media print {
       body { background: white; padding: 0; }
-     .btn-save, button,.header,.totals,.main-grid.panel:first-child, div[style*="display:flex"], div[style*="display:grid"] { display: none!important; }
-      .panel { box-shadow: none; padding: 0; }
+   .btn-save, button,.header,.totals,.main-grid>.panel:first-child, div[style*="display:flex"], div[style*="display:grid"] { display: none!important; }
+    .panel { box-shadow: none; padding: 0; }
       table { font-size: 16px!important; }
       th, td { padding: 10px!important; border: 1px solid #000!important; }
       th { font-size: 14px!important; }
@@ -147,47 +147,44 @@
     </div>
   </div>
 
-  
 <script>
 let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
 
-// ફોર્સ ફિક્સ - દર વખતે ચેક કર અને સેવ કર
 let needsFix = false;
 data = data.map((d, i) => {
-  if (!d.aavakjavak || d.type === 'Bane' || d.aavakjavak === 'undefined' || !d.vehicleType && d.vehicle) {
+  if (!d.aavakjavak || d.type === 'Bane' || d.aavakjavak === 'undefined' ||!d.vehicleType && d.vehicle) {
     needsFix = true;
   }
-  
+
   const amt = parseFloat(d.amount || d.amt || 0);
   let t = (d.type || 'Rokad').toString().trim();
   if (t === 'Bank' || t === 'Bane' || t === 'CASH' || t === 'cash') t = 'Rokad';
   if (t === 'GPAY' || t === 'UPI' || t === 'upi') t = 'GPay';
-  
+
   let aj = (d.aavakjavak || d.aj || 'Aavak').toString().trim();
   if (aj === 'In' || aj === 'IN' || aj === 'income') aj = 'Aavak';
   if (aj === 'Out' || aj === 'OUT' || aj === 'expense') aj = 'Javak';
   if (aj === 'undefined') aj = 'Aavak';
-  
+
   return {
     sr: i + 1,
     date: d.date || d.Date || '',
     type: t,
     aavakjavak: aj,
     vehicleType: d.vehicleType || d.vehicle || d.Vehicle || '',
-    rokadAmount: t === 'Rokad' ? amt : 0,
-    gpayAmount: t === 'GPay' ? amt : 0,
+    rokadAmount: t === 'Rokad'? amt : 0,
+    gpayAmount: t === 'GPay'? amt : 0,
     amount: amt,
     party: d.party || d.Party || d.partyName || '',
     details: d.details || d.Details || d.desc || d.note || ''
   };
 });
 
-if (needsFix || !localStorage.getItem('dataFixedV3')) {
+if (needsFix ||!localStorage.getItem('dataFixedV3')) {
   localStorage.setItem('rokadData', JSON.stringify(data));
   localStorage.setItem('dataFixedV3', 'yes');
-  console.log('Data fixed and saved:', data.length, 'entries');
 }
-  
+
 let editId = null;
 let isFullScreen = false;
 document.getElementById('date').valueAsDate = new Date();
@@ -261,7 +258,7 @@ function saveEntry() {
     date: document.getElementById('date').value,
     type: type,
     aavakjavak: document.getElementById('aavakjavak').value,
-    vehicleType: document.getElementById('vehicleType').value,
+    vehicleType: document.getElementById('vehicle').value,
     rokadAmount: type === 'Rokad'? amt : 0,
     gpayAmount: type === 'GPay'? amt : 0,
     amount: amt,
@@ -284,7 +281,7 @@ function saveEntry() {
 }
 
 function resetForm() {
-  document.getElementById('vehicleType').value = '';
+  document.getElementById('vehicle').value = '';
   document.getElementById('amount').value = '';
   document.getElementById('party').value = '';
   document.getElementById('details').value = '';
@@ -311,13 +308,13 @@ function getFilteredData() {
   filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
   return filtered;
 }
-  
-document.getElementById('filterType').value = ''; // Aavak+Javak ડિફોલ્ટ રાખ
+
+document.getElementById('filterType').value = '';
 document.getElementById('filterParty').value = '';
 document.getElementById('filterDate1').value = '';
 document.getElementById('filterDate2').value = '';
 document.getElementById('searchBox').value = '';
-  
+
 function renderTable() {
   const tbody = document.getElementById('dataTable');
   let filtered = getFilteredData();
@@ -382,7 +379,7 @@ function editEntry(sr) {
   document.getElementById('date').value = d.date;
   document.getElementById('type').value = d.type;
   document.getElementById('aavakjavak').value = d.aavakjavak;
-  document.getElementById('vehicleType').value = d.vehicleType;
+  document.getElementById('vehicle').value = d.vehicleType;
   document.getElementById('amount').value = d.amount;
   document.getElementById('party').value = d.party;
   document.getElementById('details').value = d.details;
@@ -451,107 +448,96 @@ function exportPDF() {
       <table style="width:100%;border-collapse:collapse;font-size:16px;">
         <thead>
           <tr style="background:#334155;color:white;">
-            <th style="border:1px solid #333;padding:10px;">Sr</th>
-            <th style="border:1px solid #333;padding:10px;">Date</th>
-            <th style="border:1px solid #333;padding:10px;">Type</th>
-            <th style="border:1px solid #333;padding:10px;">A/J</th>
-            <th style="border:1px solid #333;padding:10px;">Vehicle</th>
-            <th style="border:1px solid #333;padding:10px;">Rokad</th>
-            <th style="border:1px solid #333;padding:10px;">GPay</th>
-            <th style="border:1px solid #333;padding:10px;">Total</th>
-            <th style="border:1px solid #333;padding:10px;">Party</th>
-            <th style="border:1px solid #333;padding:10px;">Details</th>
+            <th style="border:1px solid #000;padding:10px;">Sr</th>
+            <th style="border:1px solid #000;padding:10px;">Date</th>
+            <th style="border:1px solid #000;padding:10px;">Type</th>
+            <th style="border:1px solid #000;padding:10px;">A/J</th>
+            <th style="border:1px solid #000;padding:10px;">Vehicle</th>
+            <th style="border:1px solid #000;padding:10px;">Rokad</th>
+            <th style="border:1px solid #000;padding:10px;">GPay</th>
+            <th style="border:1px solid #000;padding:10px;">Total</th>
+            <th style="border:1px solid #000;padding:10px;">Party</th>
+            <th style="border:1px solid #000;padding:10px;">Details</th>
           </tr>
         </thead>
         <tbody>`;
 
-  filtered.forEach((d, i) => {
+  filtered.forEach((d,i) => {
     html += `
-      <tr>
-        <td style="border:1px solid #333;padding:10px;">${i+1}</td>
-        <td style="border:1px solid #333;padding:10px;">${formatDate(d.date)}</td>
-        <td style="border:1px solid #333;padding:10px;">${d.type}</td>
-        <td style="border:1px solid #333;padding:10px;">${d.aavakjavak}</td>
-        <td style="border:1px solid #333;padding:10px;">${d.vehicleType}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(d.rokadAmount||0).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(d.gpayAmount||0).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(d.amount||0).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;">${d.party}</td>
-        <td style="border:1px solid #333;padding:10px;">${d.details}</td>
-      </tr>`;
+          <tr>
+            <td style="border:1px solid #000;padding:10px;">${i+1}</td>
+            <td style="border:1px solid #000;padding:10px;">${formatDate(d.date)}</td>
+            <td style="border:1px solid #000;padding:10px;">${d.type}</td>
+            <td style="border:1px solid #000;padding:10px;">${d.aavakjavak}</td>
+            <td style="border:1px solid #000;padding:10px;">${d.vehicleType}</td>
+            <td style="border:1px solid #000;padding:10px;">${(d.rokadAmount||0).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${(d.gpayAmount||0).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${(d.amount||0).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${d.party}</td>
+            <td style="border:1px solid #000;padding:10px;">${d.details}</td>
+          </tr>`;
   });
 
   html += `
-      <tr style="background:#f1f5f9;font-weight:bold;font-size:17px;">
-        <td colspan="5" style="border:1px solid #333;padding:10px;text-align:right;">TOTAL AAVAK</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${ra.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${ga.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(ra+ga).toFixed(2)}</td>
-        <td colspan="2" style="border:1px solid #333;padding:10px;"></td>
-      </tr>
-      <tr style="background:#f1f5f9;font-weight:bold;font-size:17px;">
-        <td colspan="5" style="border:1px solid #333;padding:10px;text-align:right;">TOTAL JAVAK</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${rj.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${gj.toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(rj+gj).toFixed(2)}</td>
-        <td colspan="2" style="border:1px solid #333;padding:10px;"></td>
-      </tr>
-      <tr style="background:#d1fae5;font-weight:bold;color:#059669;font-size:18px;">
-        <td colspan="5" style="border:1px solid #333;padding:10px;text-align:right;">FINAL BALANCE</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(ra-rj).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(ga-gj).toFixed(2)}</td>
-        <td style="border:1px solid #333;padding:10px;text-align:right;">${(ra-rj+ga-gj).toFixed(2)}</td>
-        <td colspan="2" style="border:1px solid #333;padding:10px;"></td>
-      </tr>
-    </tbody></table></div>`;
+          <tr style="background:#fef3c7;font-weight:bold;">
+            <td colspan="5" style="border:1px solid #000;padding:10px;text-align:right;">AAVAK TOTAL</td>
+            <td style="border:1px solid #000;padding:10px;">${ra.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${ga.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${(ra+ga).toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #000;padding:10px;"></td>
+          </tr>
+          <tr style="background:#fee2e2;font-weight:bold;">
+            <td colspan="5" style="border:1px solid #000;padding:10px;text-align:right;">JAVAK TOTAL</td>
+            <td style="border:1px solid #000;padding:10px;">${rj.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${gj.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${(rj+gj).toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #000;padding:10px;"></td>
+          </tr>
+          <tr style="background:#d1fae5;font-weight:bold;color:#059669;">
+            <td colspan="5" style="border:1px solid #000;padding:10px;text-align:right;">BALANCE</td>
+            <td style="border:1px solid #000;padding:10px;">${(ra-rj).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${(ga-gj).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:10px;">${(ra-rj+ga-gj).toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #000;padding:10px;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
 
   const opt = {
-    margin: 5,
+    margin: 10,
     filename: 'RokadLedger.pdf',
-    image: { type: 'jpeg', quality: 1.0 },
-    html2canvas: { scale: 4, useCORS: true, letterRendering: true, dpi: 300 },
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
   };
 
-  html2pdf().from(html).set(opt).save();
+  html2pdf().set(opt).from(html).save();
 }
 
 function backupData() {
-  const backupObj = {
-    data: data,
-    timestamp: new Date().toISOString(),
-    version: '1.0'
-  };
-  const blob = new Blob([JSON.stringify(backupObj)], {type: 'application/json'});
+  const blob = new Blob([JSON.stringify({data: data, timestamp: new Date().toISOString()})], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `RokadBackup_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  document.getElementById('backupBtn').classList.add('auto-backup');
-  setTimeout(() => document.getElementById('backupBtn').classList.remove('auto-backup'), 3000);
-  alert('Backup Download થઈ ગયું! આ ફાઈલ Google Drive માં મેન્યુઅલી અપલોડ કરી દેજો.');
+  a.href = url; a.download = `RokadBackup_${new Date().toISOString().split('T')[0]}.json`; a.click();
 }
 
 function restoreData() {
   const input = document.createElement('input');
-  input.type = 'file'; input.accept = '.json';
+  input.type = 'file';
+  input.accept = '.json';
   input.onchange = e => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        const backup = JSON.parse(ev.target.result);
-        let rawData = backup.data || backup;
-        if (!Array.isArray(rawData)) {
-          rawData = Object.values(rawData);
-        }
-        data = rawData.map((d, i) => ({...d, sr: d.sr || i + 1}));
+        const obj = JSON.parse(ev.target.result);
+        data = obj.data || obj;
         localStorage.setItem('rokadData', JSON.stringify(data));
-        renderTable();
-        alert('Data Restore થઈ ગયું.\nTotal: ' + data.length + '\nAavak: ' + data.filter(d => d.aavakjavak === 'Aavak').length + '\nJavak: ' + data.filter(d => d.aavakjavak === 'Javak').length);
+        alert('Restore થઈ ગયું!');
+        location.reload();
       } catch(err) {
-        alert('Error: ફાઈલ બરાબર નથી - ' + err.message);
+        alert('ફાઈલ ખોટી છે');
       }
     };
     reader.readAsText(file);
@@ -561,25 +547,70 @@ function restoreData() {
 
 function showPartyLedger() {
   const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
-  let html = '<table style="width:100%;border-collapse:collapse;"><tr style="background:#334155;color:white;"><th style="padding:8px;border:1px solid #ddd;">Party Name</th><th style="padding:8px;border:1px solid #ddd;">Rokad Aavak</th><th style="padding:8px;border:1px solid #ddd;">Rokad Javak</th><th style="padding:8px;border:1px solid #ddd;">GPay Aavak</th><th style="padding:8px;border:1px solid #ddd;">GPay Javak</th><th style="padding:8px;border:1px solid #ddd;">Balance</th></tr>';
+  if(parties.length === 0) return alert('કોઈ પાર્ટી નથી');
 
-  parties.forEach(p => {
+  let html = `
+    <div style="font-family: Arial, sans-serif;">
+      <h3 style="margin-bottom:15px;">પાર્ટી લેજર સારાંશ</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead>
+          <tr style="background:#334155;color:white;">
+            <th style="border:1px solid #000;padding:8px;">Party Name</th>
+            <th style="border:1px solid #000;padding:8px;">Rokad Aavak</th>
+            <th style="border:1px solid #000;padding:8px;">Rokad Javak</th>
+            <th style="border:1px solid #000;padding:8px;">GPay Aavak</th>
+            <th style="border:1px solid #000;padding:8px;">GPay Javak</th>
+            <th style="border:1px solid #000;padding:8px;">Balance</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  let totalRA=0, totalRJ=0, totalGA=0, totalGJ=0;
+
+  parties.forEach(party => {
     let ra=0, rj=0, ga=0, gj=0;
-    data.filter(d => d.party === p).forEach(d => {
-      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
-      else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+    data.forEach(d => {
+      if(d.party === party) {
+        if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+        else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+      }
     });
-    html += `<tr><td style="padding:8px;border:1px solid #ddd;">${p}</td><td style="padding:8px;border:1px solid #ddd;">${ra.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${rj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${ga.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;">${gj.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">${(ra-rj+ga-gj).toFixed(2)}</td></tr>`;
+    totalRA+=ra; totalRJ+=rj; totalGA+=ga; totalGJ+=gj;
+    const bal = (ra-rj)+(ga-gj);
+    html += `
+          <tr>
+            <td style="border:1px solid #000;padding:8px;font-weight:600;">${party}</td>
+            <td style="border:1px solid #000;padding:8px;">${ra.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;">${rj.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;">${ga.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;">${gj.toFixed(2)}</td>
+                        <td style="border:1px solid #000;padding:8px;font-weight:bold;color:${bal>=0?'#059669':'#dc2626'};">${bal.toFixed(2)}</td>
+          </tr>`;
   });
-  html += '</table>';
 
-  document.getElementById('modalTitle').textContent = 'Party Ledger';
+  html += `
+          <tr style="background:#d1fae5;font-weight:bold;">
+            <td style="border:1px solid #000;padding:8px;">TOTAL</td>
+            <td style="border:1px solid #000;padding:8px;">${totalRA.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;">${totalRJ.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;">${totalGA.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;">${totalGJ.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:8px;color:#059669;">${(totalRA-totalRJ+totalGA-totalGJ).toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button style="background:#10b981;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;font-weight:600;" onclick="printPartyLedger()">🖨️ Print</button>
+    </div>`;
+
+  document.getElementById('modalTitle').textContent = 'Party Ledger Report';
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('reportModal').style.display = 'block';
 }
 
 function showFullReport() {
   let filtered = getFilteredData();
+  if(filtered.length === 0) return alert('કોઈ ડેટા નથી');
+
   let ra=0, rj=0, ga=0, gj=0;
   filtered.forEach(d => {
     if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
@@ -587,86 +618,93 @@ function showFullReport() {
   });
 
   let html = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px;">
-      <div style="background:#fef3c7;padding:15px;border-radius:8px;">
-        <h3 style="margin:0 0 10px 0;color:#92400e;">Rokad Summary</h3>
-        <p>Total Aavak: ₹ ${ra.toFixed(2)}</p>
-        <p>Total Javak: ₹ ${rj.toFixed(2)}</p>
-        <p style="font-weight:bold;border-top:2px solid #92400e;padding-top:5px;">Balance: ₹ ${(ra-rj).toFixed(2)}</p>
+    <div style="font-family: Arial, sans-serif;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <h2 style="margin:0;">ROKAD & GPAY LEDGER</h2>
+        <p style="margin:5px 0;">Full Transaction Report</p>
+        <p style="margin:5px 0;font-size:14px;">Date: ${formatDate(new Date().toISOString().split('T')[0])} | Total Entries: ${filtered.length}</p>
       </div>
-      <div style="background:#ede9fe;padding:15px;border-radius:8px;">
-        <h3 style="margin:0 0 10px 0;color:#5b21b6;">GPay Summary</h3>
-        <p>Total Aavak: ₹ ${ga.toFixed(2)}</p>
-        <p>Total Javak: ₹ ${gj.toFixed(2)}</p>
-        <p style="font-weight:bold;border-top:2px solid #5b21b6;padding-top:5px;">Balance: ₹ ${(ga-gj).toFixed(2)}</p>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="background:#334155;color:white;">
+            <th style="border:1px solid #000;padding:6px;">Sr</th>
+            <th style="border:1px solid #000;padding:6px;">Date</th>
+            <th style="border:1px solid #000;padding:6px;">Type</th>
+            <th style="border:1px solid #000;padding:6px;">A/J</th>
+            <th style="border:1px solid #000;padding:6px;">Vehicle</th>
+            <th style="border:1px solid #000;padding:6px;">Rokad</th>
+            <th style="border:1px solid #000;padding:6px;">GPay</th>
+            <th style="border:1px solid #000;padding:6px;">Total</th>
+            <th style="border:1px solid #000;padding:6px;">Party</th>
+            <th style="border:1px solid #000;padding:6px;">Details</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  filtered.forEach((d,i) => {
+    html += `
+          <tr>
+            <td style="border:1px solid #000;padding:6px;">${i+1}</td>
+            <td style="border:1px solid #000;padding:6px;">${formatDate(d.date)}</td>
+            <td style="border:1px solid #000;padding:6px;">${d.type}</td>
+            <td style="border:1px solid #000;padding:6px;">${d.aavakjavak}</td>
+            <td style="border:1px solid #000;padding:6px;">${d.vehicleType}</td>
+            <td style="border:1px solid #000;padding:6px;">${(d.rokadAmount||0).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${(d.gpayAmount||0).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${(d.amount||0).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${d.party}</td>
+            <td style="border:1px solid #000;padding:6px;">${d.details}</td>
+          </tr>`;
+  });
+
+  html += `
+          <tr style="background:#fef3c7;font-weight:bold;">
+            <td colspan="5" style="border:1px solid #000;padding:6px;text-align:right;">AAVAK TOTAL</td>
+            <td style="border:1px solid #000;padding:6px;">${ra.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${ga.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${(ra+ga).toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #000;padding:6px;"></td>
+          </tr>
+          <tr style="background:#fee2e2;font-weight:bold;">
+            <td colspan="5" style="border:1px solid #000;padding:6px;text-align:right;">JAVAK TOTAL</td>
+            <td style="border:1px solid #000;padding:6px;">${rj.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${gj.toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${(rj+gj).toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #000;padding:6px;"></td>
+          </tr>
+          <tr style="background:#d1fae5;font-weight:bold;color:#059669;">
+            <td colspan="5" style="border:1px solid #000;padding:6px;text-align:right;">BALANCE</td>
+            <td style="border:1px solid #000;padding:6px;">${(ra-rj).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${(ga-gj).toFixed(2)}</td>
+            <td style="border:1px solid #000;padding:6px;">${(ra-rj+ga-gj).toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #000;padding:6px;"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:15px;display:flex;gap:10px;">
+        <button style="background:#10b981;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;" onclick="window.print()">🖨️ Print</button>
+        <button style="background:#dc2626;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;" onclick="exportPDFFromReport()">📄 Save as PDF</button>
       </div>
-        <h3>Total Entries: ${filtered.length}</h3>
-    <h3 style="color:#059669;">Grand Total Balance: ₹ ${(ra-rj+ga-gj).toFixed(2)}</h3>
-    <button style="background:#dc2626;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;" onclick="exportPDF()">Download PDF Report</button>
-  `;
+    </div>`;
 
   document.getElementById('modalTitle').textContent = 'Full Report';
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('reportModal').style.display = 'block';
 }
 
+function printPartyLedger() {
+  window.print();
+}
+
+function exportPDFFromReport() {
+  exportPDF();
+}
+
 function closeModal() {
   document.getElementById('reportModal').style.display = 'none';
 }
 
-document.getElementById('details').addEventListener('keypress', e => {
-  if (e.key === 'Enter') saveEntry();
-});
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
-
-// પેજ લોડ પર ફિલ્ટર રિસેટ કર - બધી એન્ટ્રી દેખાય એ માટે
-document.getElementById('filterType').value = '';
-document.getElementById('filterParty').value = '';
-document.getElementById('filterDate1').value = '';
-document.getElementById('filterDate2').value = '';
-document.getElementById('searchBox').value = '';
 renderTable();
-
-  function forceFixData() {
-  alert('બટન તો ચાલ્યું!'); // આ ટેસ્ટ માટે
-  if (!confirm('બધો જૂનો ડેટા ફિક્સ કરવો છે? undefined ગાયબ થઈ જશે.')) return;
-  
-  let fixedCount = 0;
-  data = data.map((d, i) => {
-    const amt = parseFloat(d.amount || 0);
-    let t = (d.type || 'Rokad').toString().trim();
-    if (t === 'Bank' || t === 'Bane' || t === 'CASH') t = 'Rokad';
-    if (t === 'GPAY' || t === 'UPI') t = 'GPay';
-    
-    let aj = (d.aavakjavak || d.aj || 'Aavak').toString().trim();
-    if (aj === 'In' || aj === 'income' || aj === 'undefined') aj = 'Aavak';
-    if (aj === 'Out' || aj === 'expense') aj = 'Javak';
-    
-    let veh = (d.vehicleType || d.vehicle || '').toString().trim();
-    if (veh === 'undefined') veh = '';
-    
-    fixedCount++;
-    return {
-      sr: i + 1,
-      date: d.date || '',
-      type: t,
-      aavakjavak: aj,
-      vehicleType: veh,
-      rokadAmount: t === 'Rokad' ? amt : 0,
-      gpayAmount: t === 'GPay' ? amt : 0,
-      amount: amt,
-      party: d.party || '',
-      details: d.details || ''
-    };
-  });
-  
-  localStorage.setItem('rokadData', JSON.stringify(data));
-  renderTable();
-  alert('ડન! ' + fixedCount + ' એન્ટ્રી ફિક્સ થઈ. હવે બંધ કરીને ખોલ, પ્રોબ્લેમ નહીં આવે.');
-}
 </script>
 </body>
 </html>
