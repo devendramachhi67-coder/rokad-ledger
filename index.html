@@ -141,22 +141,22 @@
 <script>
 let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
 
-// જૂનો ડેટા ફિક્સ કર - Javak વાળી એન્ટ્રી માટે
+// આ 10 લાઈન નવી એડ કર - જૂનો ડેટા ફિક્સ કરવા માટે
 data = data.map((d, i) => {
   return {
     sr: d.sr || i + 1,
     date: d.date || '',
     type: d.type || 'Rokad',
-    aavakjavak: d.aavakjavak || 'Aavak',
+    aavakjavak: d.aavakjavak || 'Aavak', // જો ન હોય તો Aavak માની લે
     vehicleType: d.vehicleType || '',
-    rokadAmount: d.rokadAmount !== undefined ? d.rokadAmount : (d.type === 'Rokad' ? d.amount : 0) || 0,
-    gpayAmount: d.gpayAmount !== undefined ? d.gpayAmount : (d.type === 'GPay' ? d.amount : 0) || 0,
+    rokadAmount: d.rokadAmount || (d.type === 'Rokad' ? d.amount : 0) || 0,
+    gpayAmount: d.gpayAmount || (d.type === 'GPay' ? d.amount : 0) || 0,
     amount: d.amount || 0,
     party: d.party || '',
     details: d.details || ''
   };
 });
-localStorage.setItem('rokadData', JSON.stringify(data));
+localStorage.setItem('rokadData', JSON.stringify(data)); // ફિક્સ કરેલો ડેટા પાછો સેવ કર
 
 let editId = null;
 let isFullScreen = false;
@@ -281,7 +281,13 @@ function getFilteredData() {
   filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
   return filtered;
 }
-
+  
+document.getElementById('filterType').value = ''; // Aavak+Javak ડિફોલ્ટ રાખ
+document.getElementById('filterParty').value = '';
+document.getElementById('filterDate1').value = '';
+document.getElementById('filterDate2').value = '';
+document.getElementById('searchBox').value = '';
+  
 function renderTable() {
   const tbody = document.getElementById('dataTable');
   let filtered = getFilteredData();
