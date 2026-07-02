@@ -140,11 +140,28 @@
 
 <script>
 let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
+
+// જૂનો ડેટા ફિક્સ કર - Javak વાળી એન્ટ્રી માટે
+data = data.map((d, i) => {
+  return {
+    sr: d.sr || i + 1,
+    date: d.date || '',
+    type: d.type || 'Rokad',
+    aavakjavak: d.aavakjavak || 'Aavak',
+    vehicleType: d.vehicleType || '',
+    rokadAmount: d.rokadAmount !== undefined ? d.rokadAmount : (d.type === 'Rokad' ? d.amount : 0) || 0,
+    gpayAmount: d.gpayAmount !== undefined ? d.gpayAmount : (d.type === 'GPay' ? d.amount : 0) || 0,
+    amount: d.amount || 0,
+    party: d.party || '',
+    details: d.details || ''
+  };
+});
+localStorage.setItem('rokadData', JSON.stringify(data));
+
 let editId = null;
 let isFullScreen = false;
 document.getElementById('date').valueAsDate = new Date();
 
-// ઓટો બેકઅપ - દર 10 મિનિટે + ફાઈલ ડાઉનલોડ
 setInterval(autoBackupDownload, 600000);
 checkLastBackup();
 autoBackup();
@@ -153,7 +170,7 @@ function formatDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d)) return dateStr;
-  return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`; // 1-7-2026 ફોર્મેટ
+  return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`;
 }
 
 function autoBackup() {
@@ -489,13 +506,16 @@ function restoreData() {
     reader.onload = ev => {
       try {
         const backup = JSON.parse(ev.target.result);
-        data = backup.data || backup;
-        data = data.map((d, i) => ({...d, sr: d.sr || i + 1}));
+        let rawData = backup.data || backup;
+        if (!Array.isArray(rawData)) {
+          rawData = Object.values(rawData);
+        }
+        data = rawData.map((d, i) => ({...d, sr: d.sr || i + 1}));
         localStorage.setItem('rokadData', JSON.stringify(data));
         renderTable();
         alert('Data Restore થઈ ગયું.\nTotal: ' + data.length + '\nAavak: ' + data.filter(d => d.aavakjavak === 'Aavak').length + '\nJavak: ' + data.filter(d => d.aavakjavak === 'Javak').length);
       } catch(err) {
-        alert('Error: ' + err.message);
+        alert('Error: ફાઈલ બરાબર નથી - ' + err.message);
       }
     };
     reader.readAsText(file);
@@ -544,8 +564,7 @@ function showFullReport() {
         <p>Total Javak: ₹ ${gj.toFixed(2)}</p>
         <p style="font-weight:bold;border-top:2px solid #5b21b6;padding-top:5px;">Balance: ₹ ${(ga-gj).toFixed(2)}</p>
       </div>
-    </div>
-    <h3>Total Entries: ${filtered.length}</h3>
+        <h3>Total Entries: ${filtered.length}</h3>
     <h3 style="color:#059669;">Grand Total Balance: ₹ ${(ra-rj+ga-gj).toFixed(2)}</h3>
     <button style="background:#dc2626;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;" onclick="exportPDF()">Download PDF Report</button>
   `;
@@ -567,6 +586,12 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
+// પેજ લોડ પર ફિલ્ટર રિસેટ કર - બધી એન્ટ્રી દેખાય એ માટે
+document.getElementById('filterType').value = '';
+document.getElementById('filterParty').value = '';
+document.getElementById('filterDate1').value = '';
+document.getElementById('filterDate2').value = '';
+document.getElementById('searchBox').value = '';
 renderTable();
 </script>
 </body>
