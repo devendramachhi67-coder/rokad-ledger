@@ -141,36 +141,43 @@
 <script>
 let data = JSON.parse(localStorage.getItem('rokadData') || '[]');
 
-// એક વાર જૂનો ડેટા ફોર્સ ફિક્સ કર
-const migrationDone = localStorage.getItem('migrationV2');
-if (!migrationDone && data.length > 0) {
-  data = data.map((d, i) => {
-    const amt = parseFloat(d.amount || d.amt || d.AMOUNT || 0);
-    let t = d.type || d.Type || d.paymentType || 'Rokad';
-    if (t === 'Bank' || t === 'Bane' || t === 'CASH') t = 'Rokad';
-    if (t === 'GPAY' || t === 'UPI') t = 'GPay';
-    
-    let aj = d.aavakjavak || d.aj || d.AJ || d.inout || 'Aavak';
-    if (aj === 'In' || aj === 'IN' || aj === 'income') aj = 'Aavak';
-    if (aj === 'Out' || aj === 'OUT' || aj === 'expense') aj = 'Javak';
-    
-    return {
-      sr: i + 1, // બધા Sr નંબર ફરી સેટ કર
-      date: d.date || d.Date || d.DATE || '',
-      type: t,
-      aavakjavak: aj,
-      vehicleType: d.vehicleType || d.vehicle || d.Vehicle || d.VEHICLE || '',
-      rokadAmount: t === 'Rokad' ? amt : 0,
-      gpayAmount: t === 'GPay' ? amt : 0,
-      amount: amt,
-      party: d.party || d.Party || d.partyName || d.PARTY || '',
-      details: d.details || d.Details || d.desc || d.DESC || d.note || ''
-    };
-  });
+// ફોર્સ ફિક્સ - દર વખતે ચેક કર અને સેવ કર
+let needsFix = false;
+data = data.map((d, i) => {
+  if (!d.aavakjavak || d.type === 'Bane' || d.aavakjavak === 'undefined' || !d.vehicleType && d.vehicle) {
+    needsFix = true;
+  }
+  
+  const amt = parseFloat(d.amount || d.amt || 0);
+  let t = (d.type || 'Rokad').toString().trim();
+  if (t === 'Bank' || t === 'Bane' || t === 'CASH' || t === 'cash') t = 'Rokad';
+  if (t === 'GPAY' || t === 'UPI' || t === 'upi') t = 'GPay';
+  
+  let aj = (d.aavakjavak || d.aj || 'Aavak').toString().trim();
+  if (aj === 'In' || aj === 'IN' || aj === 'income') aj = 'Aavak';
+  if (aj === 'Out' || aj === 'OUT' || aj === 'expense') aj = 'Javak';
+  if (aj === 'undefined') aj = 'Aavak';
+  
+  return {
+    sr: i + 1,
+    date: d.date || d.Date || '',
+    type: t,
+    aavakjavak: aj,
+    vehicleType: d.vehicleType || d.vehicle || d.Vehicle || '',
+    rokadAmount: t === 'Rokad' ? amt : 0,
+    gpayAmount: t === 'GPay' ? amt : 0,
+    amount: amt,
+    party: d.party || d.Party || d.partyName || '',
+    details: d.details || d.Details || d.desc || d.note || ''
+  };
+});
+
+if (needsFix || !localStorage.getItem('dataFixedV3')) {
   localStorage.setItem('rokadData', JSON.stringify(data));
-  localStorage.setItem('migrationV2', 'done'); // ફરી ન ચાલે એટલે ફ્લેગ સેટ કર
-  alert('જૂનો ડેટા ફિક્સ થઈ ગયો! ' + data.length + ' એન્ટ્રી અપડેટ થઈ.');
+  localStorage.setItem('dataFixedV3', 'yes');
+  console.log('Data fixed and saved:', data.length, 'entries');
 }
+  
 let editId = null;
 let isFullScreen = false;
 document.getElementById('date').valueAsDate = new Date();
