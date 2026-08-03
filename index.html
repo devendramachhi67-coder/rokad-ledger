@@ -8,10 +8,6 @@
   <meta name="theme-color" content="#1e293b">
   <link rel="icon" href="icon-192.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <!-- FIREBASE ADD KARYU -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
@@ -50,8 +46,8 @@
   <div class="header">ROKAD & GPAY LEDGER <span id="userEmail" style="font-size:12px;color:#059669;"></span></div>
 
   <div style="text-align:center;margin-bottom:8px;">
-    <button id="loginBtn" style="background:#3b82f6;color:white;padding:8px 16px;border:none;border-radius:6px;" onclick="login()">Google thi Login</button>
-    <button id="logoutBtn" style="background:#ef4444;color:white;padding:8px 16px;border:none;border-radius:6px;display:none;" onclick="logout()">Logout</button>
+    <button id="loginBtn" style="background:#3b82f6;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;" onclick="login()">Google thi Login</button>
+    <button id="logoutBtn" style="background:#ef4444;color:white;padding:8px 16px;border:none;border-radius:6px;display:none;cursor:pointer;" onclick="logout()">Logout</button>
   </div>
 
   <div id="app" style="display:none;">
@@ -62,12 +58,12 @@
   </div>
 
   <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-    <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="resetForm()">New Entry</button>
-    <button style="background:#8b5cf6;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="showPartyLedger()">Party Ledger</button>
-    <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="showFullReport()">Full Report</button>
-    <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="exportExcel()">Excel</button>
-    <button style="background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="exportPDF()">PDF</button>
-    <button id="screenBtn" style="background:#475569;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;" onclick="toggleScreen()">Full Screen</button>
+    <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="resetForm()">New Entry</button>
+    <button style="background:#8b5cf6;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="showPartyLedger()">Party Ledger</button>
+    <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="showFullReport()">Full Report</button>
+    <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="exportExcel()">Excel</button>
+    <button style="background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="exportPDF()">PDF</button>
+    <button id="screenBtn" style="background:#475569;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="toggleScreen()">Full Screen</button>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 2fr;gap:6px;margin-bottom:8px;">
@@ -84,7 +80,7 @@
       <input type="date" id="date">
       <label>Type</label><select id="type"><option>Rokad</option><option>GPay</option></select>
       <label>Aavak/Javak</label><select id="aavakjavak"><option>Aavak</option><option>Javak</option></select>
-      <label>Vehicle</label><input list="vehicles" id="vehicle"><datalist id="vehicles"><option>Tractor</option><option>JCB</option><option>Machine</option></datalist>
+      <label>Vehicle</label><input list="vehicles" id="vehicle"><datalist id="vehicles"><option>Tractor</option><option>JCB</option><option>Machine</option><option>Farm</option></datalist>
       <label>Amount ₹</label><input type="number" id="amount">
       <label>Party</label><input type="text" id="party">
       <label>Details</label><input type="text" id="details">
@@ -102,169 +98,193 @@
 
   <div id="reportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
 
-<script>
-// 1. TAMARO FIREBASE CONFIG AHI NAKHO
-const firebaseConfig = {
-  apiKey: "TAMARO_API_KEY_AHI_PASTE_KARO",
-  authDomain: "rokad-ledger.firebaseapp.com",
-  databaseURL: "https://rokad-ledger-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "rokad-ledger",
-};
-firebase.initializeApp(firebaseConfig);
+<script type="module">
+  // FIREBASE IMPORT
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getDatabase, ref, push, set, remove, query, orderByChild, equalTo, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
 
-let data = [];
-let currentUser = null;
-let editId = null;
-let isFullScreen = false;
-document.getElementById('date').valueAsDate = new Date();
-
-// 2. LOGIN LOGOUT
-function login(){
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider);
-}
-function logout(){ firebase.auth().signOut(); }
-
-firebase.auth().onAuthStateChanged(user => {
-  if(user){
-    currentUser = user;
-    document.getElementById('loginBtn').style.display = 'none';
-    document.getElementById('logoutBtn').style.display = 'inline';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('userEmail').textContent = ' - '+user.email;
-    loadData();
-  } else {
-    currentUser = null;
-    document.getElementById('loginBtn').style.display = 'inline';
-    document.getElementById('logoutBtn').style.display = 'none';
-    document.getElementById('app').style.display = 'none';
-    data = [];
-    renderTable();
-  }
-});
-
-// 3. FIREBASE MATHI DATA LOAD
-function loadData(){
-  firebase.database().ref('data').orderByChild('userId').equalTo(currentUser.uid).on('value', (snap)=>{
-    data = [];
-    snap.forEach(child => {
-      data.push({id: child.key, ...child.val()});
-    });
-    renderTable();
-  });
-}
-
-// 4. SAVE ENTRY - userId ADD KARYU
-function saveEntry() {
-  if(!currentUser) return alert('Pela Login karo');
-  const type = document.getElementById('type').value;
-  const amt = parseFloat(document.getElementById('amount').value) || 0;
-  if(!amt) return alert('Amount nakho');
-
-  const entry = {
-    date: document.getElementById('date').value,
-    type: type,
-    aavakjavak: document.getElementById('aavakjavak').value,
-    vehicleType: document.getElementById('vehicle').value,
-    rokadAmount: type === 'Rokad'? amt : 0,
-    gpayAmount: type === 'GPay'? amt : 0,
-    amount: amt,
-    party: document.getElementById('party').value,
-    details: document.getElementById('details').value,
-    userId: currentUser.uid // <-- IMPORTANT
+  // TAMARO FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyAuAqJ1npzUSY-fGo6Vf7kedCm8qFmyJKk",
+    authDomain: "rokad-ledger.firebaseapp.com",
+    databaseURL: "https://rokad-ledger-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "rokad-ledger",
+    storageBucket: "rokad-ledger.firebasestorage.app",
+    messagingSenderId: "746943061738",
+    appId: "1:746943061738:web:8cfd2e2103f7cbd1d8c193",
+    measurementId: "G-N0W8D2G50M"
   };
 
-  if (editId) {
-    firebase.database().ref('data/' + editId).set(entry);
-    editId = null;
-  } else {
-    firebase.database().ref('data').push(entry);
-  }
-  resetForm();
-}
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+  const provider = new GoogleAuthProvider();
 
-function resetForm() {
-  document.getElementById('vehicle').value = '';
-  document.getElementById('amount').value = '';
-  document.getElementById('party').value = '';
-  document.getElementById('details').value = '';
+  let data = [];
+  let currentUser = null;
+  let editId = null;
+  let isFullScreen = false;
   document.getElementById('date').valueAsDate = new Date();
-  editId = null;
-}
 
-function getFilteredData() {
-  const search = document.getElementById('searchBox').value.toLowerCase();
-  const filterType = document.getElementById('filterType').value;
-  const filterParty = document.getElementById('filterParty').value;
-  const d1 = document.getElementById('filterDate1').value;
-  const d2 = document.getElementById('filterDate2').value;
-  return data.filter(d => {
-    let match = JSON.stringify(d).toLowerCase().includes(search);
-    if (filterType && d.aavakjavak!== filterType) match = false;
-    if (filterParty && d.party!== filterParty) match = false;
-    if (d1 && d.date < d1) match = false;
-    if (d2 && d.date > d2) match = false;
-    return match;
-  }).sort((a,b)=> new Date(a.date)-new Date(b.date));
-}
+  // LOGIN LOGOUT
+  window.login = () => signInWithPopup(auth, provider);
+  window.logout = () => signOut(auth);
 
-function renderTable() {
-  const tbody = document.getElementById('dataTable');
-  let filtered = getFilteredData();
-  let ra=0, rj=0, ga=0, gj=0;
-  tbody.innerHTML = filtered.map((d, i) => {
-    if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
-    else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
-    return `<tr><td>${i+1}</td><td>${d.date}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td><td><button class="action-btn edit" onclick="editEntry('${d.id}')">E</button><button class="action-btn del" onclick="delEntry('${d.id}')">D</button></td></tr>`;
-  }).join('');
-  updateTotals(); updatePartyList(); document.getElementById('entryCount').textContent = filtered.length;
-}
-
-function editEntry(id) {
-  const d = data.find(x => x.id === id);
-  document.getElementById('date').value = d.date;
-  document.getElementById('type').value = d.type;
-  document.getElementById('aavakjavak').value = d.aavakjavak;
-  document.getElementById('vehicle').value = d.vehicleType;
-  document.getElementById('amount').value = d.amount;
-  document.getElementById('party').value = d.party;
-  document.getElementById('details').value = d.details;
-  editId = id; window.scrollTo(0,0);
-}
-
-function delEntry(id) {
-  if (confirm('Delete karvu che?')) {
-    firebase.database().ref('data/' + id).remove();
-  }
-}
-
-function updateTotals() {
-  let rokad = 0, gpay = 0;
-  data.forEach(d => {
-    if (d.aavakjavak === 'Aavak') { rokad += d.rokadAmount || 0; gpay += d.gpayAmount || 0; }
-    else { rokad -= d.rokadAmount || 0; gpay -= d.gpayAmount || 0; }
+  onAuthStateChanged(auth, user => {
+    if(user){
+      currentUser = user;
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'inline';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('userEmail').textContent = ' - '+user.email;
+      loadData();
+    } else {
+      currentUser = null;
+      document.getElementById('loginBtn').style.display = 'inline';
+      document.getElementById('logoutBtn').style.display = 'none';
+      document.getElementById('app').style.display = 'none';
+      data = [];
+      renderTable();
+    }
   });
-  document.getElementById('rokadTotal').textContent = '₹ ' + rokad.toFixed(2);
-  document.getElementById('gpayTotal').textContent = '₹ ' + gpay.toFixed(2);
-  document.getElementById('grandTotal').textContent = '₹ ' + (rokad + gpay).toFixed(2);
-}
 
-function updatePartyList() {
-  const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
-  document.getElementById('filterParty').innerHTML = '<option value="">All Party</option>' + parties.map(p => `<option>${p}</option>`).join('');
-}
+  // DATA LOAD
+  function loadData(){
+    const dataRef = query(ref(db, 'data'), orderByChild('userId'), equalTo(currentUser.uid));
+    onValue(dataRef, (snap)=>{
+      data = [];
+      snap.forEach(child => {
+        data.push({id: child.key,...child.val()});
+      });
+      renderTable();
+    });
+  }
 
-function toggleScreen() {
-  isFullScreen =!isFullScreen;
-  document.getElementById('mainGrid').classList.toggle('full');
-  document.getElementById('screenBtn').textContent = isFullScreen ? 'Mini Screen' : 'Full Screen';
-}
+  // SAVE
+  window.saveEntry = () => {
+    if(!currentUser) return alert('Pela Login karo');
+    const type = document.getElementById('type').value;
+    const amt = parseFloat(document.getElementById('amount').value) || 0;
+    if(!amt) return alert('Amount nakho');
 
-function exportExcel() { /* same as before */ }
-function exportPDF() { /* same as before */ }
-function showPartyLedger() { /* same as before */ }
-function showFullReport() { /* same as before */ }
-function closeModal() { document.getElementById('reportModal').style.display = 'none'; }
+    const entry = {
+      date: document.getElementById('date').value,
+      type: type,
+      aavakjavak: document.getElementById('aavakjavak').value,
+      vehicleType: document.getElementById('vehicle').value,
+      rokadAmount: type === 'Rokad'? amt : 0,
+      gpayAmount: type === 'GPay'? amt : 0,
+      amount: amt,
+      party: document.getElementById('party').value,
+      details: document.getElementById('details').value,
+      userId: currentUser.uid
+    };
+
+    if (editId) {
+      set(ref(db, 'data/' + editId), entry);
+      editId = null;
+    } else {
+      push(ref(db, 'data'), entry);
+    }
+    resetForm();
+  }
+
+  function resetForm() {
+    document.getElementById('vehicle').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('party').value = '';
+    document.getElementById('details').value = '';
+    document.getElementById('date').valueAsDate = new Date();
+    editId = null;
+  }
+
+  function getFilteredData() {
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    const filterType = document.getElementById('filterType').value;
+    const filterParty = document.getElementById('filterParty').value;
+    const d1 = document.getElementById('filterDate1').value;
+    const d2 = document.getElementById('filterDate2').value;
+    return data.filter(d => {
+      let match = JSON.stringify(d).toLowerCase().includes(search);
+      if (filterType && d.aavakjavak!== filterType) match = false;
+      if (filterParty && d.party!== filterParty) match = false;
+      if (d1 && d.date < d1) match = false;
+      if (d2 && d.date > d2) match = false;
+      return match;
+    }).sort((a,b)=> new Date(a.date)-new Date(b.date));
+  }
+
+  window.renderTable = () => {
+    const tbody = document.getElementById('dataTable');
+    let filtered = getFilteredData();
+    let ra=0, rj=0, ga=0, gj=0;
+    tbody.innerHTML = filtered.map((d, i) => {
+      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+      else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+      return `<tr><td>${i+1}</td><td>${d.date}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td><td><button class="action-btn edit" onclick="editEntry('${d.id}')">E</button><button class="action-btn del" onclick="delEntry('${d.id}')">D</button></td></tr>`;
+    }).join('');
+    updateTotals(); updatePartyList(); document.getElementById('entryCount').textContent = filtered.length;
+  }
+
+  window.editEntry = (id) => {
+    const d = data.find(x => x.id === id);
+    document.getElementById('date').value = d.date;
+    document.getElementById('type').value = d.type;
+    document.getElementById('aavakjavak').value = d.aavakjavak;
+    document.getElementById('vehicle').value = d.vehicleType;
+    document.getElementById('amount').value = d.amount;
+    document.getElementById('party').value = d.party;
+    document.getElementById('details').value = d.details;
+    editId = id; window.scrollTo(0,0);
+  }
+
+  window.delEntry = (id) => {
+    if (confirm('Delete karvu che?')) {
+      remove(ref(db, 'data/' + id));
+    }
+  }
+
+  function updateTotals() {
+    let rokad = 0, gpay = 0;
+    data.forEach(d => {
+      if (d.aavakjavak === 'Aavak') { rokad += d.rokadAmount || 0; gpay += d.gpayAmount || 0; }
+      else { rokad -= d.rokadAmount || 0; gpay -= d.gpayAmount || 0; }
+    });
+    document.getElementById('rokadTotal').textContent = '₹ ' + rokad.toFixed(2);
+    document.getElementById('gpayTotal').textContent = '₹ ' + gpay.toFixed(2);
+    document.getElementById('grandTotal').textContent = '₹ ' + (rokad + gpay).toFixed(2);
+  }
+
+  function updatePartyList() {
+    const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
+    document.getElementById('filterParty').innerHTML = '<option value="">All Party</option>' + parties.map(p => `<option>${p}</option>`).join('');
+  }
+
+  window.toggleScreen = () => {
+    isFullScreen =!isFullScreen;
+    document.getElementById('mainGrid').classList.toggle('full');
+    document.getElementById('screenBtn').textContent = isFullScreen? 'Mini Screen' : 'Full Screen';
+  }
+
+  window.exportExcel = () => {
+    let filtered = getFilteredData();
+    let csv = 'Date,Type,A/J,Vehicle,Rokad,GPay,Total,Party,Details\n';
+    filtered.forEach(d => {
+      csv += `${d.date},${d.type},${d.aavakjavak},${d.vehicleType},${d.rokadAmount},${d.gpayAmount},${d.amount},${d.party},${d.details}\n`;
+    });
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'RokadLedger.csv'; a.click();
+  }
+
+  window.exportPDF = () => alert('PDF function same raheshe');
+  window.showPartyLedger = () => alert('Party Ledger function same raheshe');
+  window.showFullReport = () => alert('Full Report function same raheshe');
+  window.closeModal = () => document.getElementById('reportModal').style.display = 'none';
 
 </script>
 </body>
