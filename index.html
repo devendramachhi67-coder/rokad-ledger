@@ -15,6 +15,13 @@
 .total { background: #059669; }
 .card.label { font-size: 11px; opacity: 0.9; }
 .card.amount { font-size: 16px; margin-top: 4px; }
+.btn-group { display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px; }
+.btn { color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer; }
+.btn.orange { background:#f97316; }
+.btn.green { background:#10b981; }
+.btn.blue { background:#3b82f6; }
+.btn.gray { background:#475569; }
+.btn.red { background:#ef4444; }
 .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
 .main-grid.full { grid-template-columns: 1fr; }
 .main-grid.full >.panel:first-child { display: none; }
@@ -32,6 +39,7 @@
 .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
 .edit { background: #3b82f6; color: white; }
 .del { background: #ef4444; color: white; }
+#fileInput { display: none; }
   </style>
 </head>
 <body>
@@ -44,11 +52,15 @@
     <div class="card total"><div class="label">TOTAL</div><div class="amount" id="grandTotal">₹ 0.00</div></div>
   </div>
 
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-    <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="resetForm()">New Entry</button>
-    <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="exportExcel()">Excel</button>
-    <button id="screenBtn" style="background:#475569;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="toggleScreen()">Full Screen</button>
+  <div class="btn-group">
+    <button class="btn orange" onclick="resetForm()">New Entry</button>
+    <button class="btn green" onclick="exportExcel()">Excel</button>
+    <button class="btn blue" onclick="exportBackup()">Backup</button>
+    <button class="btn gray" onclick="document.getElementById('fileInput').click()">Import</button>
+    <button class="btn red" onclick="clearAll()">Clear All</button>
+    <button id="screenBtn" class="btn gray" onclick="toggleScreen()">Full Screen</button>
   </div>
+  <input type="file" id="fileInput" accept=".json" onchange="importBackup(event)">
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 2fr;gap:6px;margin-bottom:8px;">
     <input type="date" id="filterDate1" onchange="renderTable()">
@@ -105,7 +117,6 @@
   let isFullScreen = false;
   document.getElementById('date').valueAsDate = new Date();
 
-  // 1. AUTO ANONYMOUS LOGIN
   signInAnonymously(auth).catch((error) => {
     document.getElementById('status').textContent = " Error: "+error.message;
   });
@@ -119,7 +130,6 @@
     }
   });
 
-  // 2. DATA LOAD
   function loadData(){
     const dataRef = query(ref(db, 'data'), orderByChild('userId'), equalTo(currentUser.uid));
     onValue(dataRef, (snap)=>{
@@ -131,7 +141,6 @@
     });
   }
 
-  // 3. SAVE ENTRY
   window.saveEntry = () => {
     if(!currentUser) return alert('Connecting...');
     const type = document.getElementById('type').value;
@@ -247,6 +256,38 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = 'RokadLedger.csv'; a.click();
+  }
+
+  // NEW: BACKUP
+  window.exportBackup = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'RokadBackup_'+new Date().toISOString().split('T')[0]+'.json'; a.click();
+  }
+
+  // NEW: IMPORT
+  window.importBackup = (event) => {
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const importedData = JSON.parse(e.target.result);
+      importedData.forEach(item => {
+        item.userId = currentUser.uid;
+        delete item.id;
+        push(ref(db, 'data'), item);
+      });
+      alert(importedData.length + ' entries import thai gai');
+    };
+    reader.readAsText(file);
+  }
+
+  // NEW: CLEAR ALL
+  window.clearAll = () => {
+    if(confirm('Badhu data delete karvu che?')) {
+      data.forEach(d => remove(ref(db, 'data/' + d.id)));
+    }
   }
 
 </script>
