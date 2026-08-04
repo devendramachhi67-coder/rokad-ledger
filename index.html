@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ROKAD & GPAY LEDGER</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e293b">
-  <link rel="icon" href="icon-192.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 8px; }
@@ -36,19 +32,10 @@
 .action-btn { padding: 2px 6px; font-size: 10px; border: none; border-radius: 4px; cursor: pointer; margin: 1px; }
 .edit { background: #3b82f6; color: white; }
 .del { background: #ef4444; color: white; }
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-.modal-content { background: white; margin: 2% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 8px; max-height: 90vh; overflow: auto; }
-.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-.close:hover { color: #000; }
   </style>
 </head>
 <body>
-  <div class="header">ROKAD & GPAY LEDGER <span id="userEmail" style="font-size:12px;color:#059669;"></span></div>
-
-  <div style="text-align:center;margin-bottom:8px;">
-    <button id="loginBtn" style="background:#3b82f6;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;" onclick="login()">Google thi Login</button>
-    <button id="logoutBtn" style="background:#ef4444;color:white;padding:8px 16px;border:none;border-radius:6px;display:none;cursor:pointer;" onclick="logout()">Logout</button>
-  </div>
+  <div class="header">ROKAD & GPAY LEDGER <span id="status" style="font-size:12px;color:#059669;"></span></div>
 
   <div id="app" style="display:none;">
   <div class="totals">
@@ -59,10 +46,7 @@
 
   <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
     <button style="background:#f97316;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="resetForm()">New Entry</button>
-    <button style="background:#8b5cf6;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="showPartyLedger()">Party Ledger</button>
-    <button style="background:#06b6d4;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="showFullReport()">Full Report</button>
     <button style="background:#10b981;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="exportExcel()">Excel</button>
-    <button style="background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="exportPDF()">PDF</button>
     <button id="screenBtn" style="background:#475569;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;" onclick="toggleScreen()">Full Screen</button>
   </div>
 
@@ -96,16 +80,11 @@
   </div>
   </div>
 
-  <div id="reportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><h2 id="modalTitle"></h2><div id="modalBody"></div></div></div>
-
 <script type="module">
-  // FIREBASE IMPORT
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
   import { getDatabase, ref, push, set, remove, query, orderByChild, equalTo, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
 
-  // TAMARO FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyAuAqJ1npzUSY-fGo6Vf7kedCm8qFmyJKk",
     authDomain: "rokad-ledger.firebaseapp.com",
@@ -113,15 +92,12 @@
     projectId: "rokad-ledger",
     storageBucket: "rokad-ledger.firebasestorage.app",
     messagingSenderId: "746943061738",
-    appId: "1:746943061738:web:8cfd2e2103f7cbd1d8c193",
-    measurementId: "G-N0W8D2G50M"
+    appId: "1:746943061738:web:8cfd2e2103f7cbd1d8c193"
   };
 
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const db = getDatabase(app);
-  const provider = new GoogleAuthProvider();
 
   let data = [];
   let currentUser = null;
@@ -129,25 +105,21 @@
   let isFullScreen = false;
   document.getElementById('date').valueAsDate = new Date();
 
+  // 1. AUTO ANONYMOUS LOGIN
+  signInAnonymously(auth).catch((error) => {
+    document.getElementById('status').textContent = " Error: "+error.message;
+  });
+
   onAuthStateChanged(auth, user => {
     if(user){
       currentUser = user;
-      document.getElementById('loginBtn').style.display = 'none';
-      document.getElementById('logoutBtn').style.display = 'inline';
+      document.getElementById('status').textContent = "Online";
       document.getElementById('app').style.display = 'block';
-      document.getElementById('userEmail').textContent = ' - '+user.email;
       loadData();
-    } else {
-      currentUser = null;
-      document.getElementById('loginBtn').style.display = 'inline';
-      document.getElementById('logoutBtn').style.display = 'none';
-      document.getElementById('app').style.display = 'none';
-      data = [];
-      renderTable();
     }
   });
 
-  // DATA LOAD
+  // 2. DATA LOAD
   function loadData(){
     const dataRef = query(ref(db, 'data'), orderByChild('userId'), equalTo(currentUser.uid));
     onValue(dataRef, (snap)=>{
@@ -159,9 +131,9 @@
     });
   }
 
-  // SAVE
+  // 3. SAVE ENTRY
   window.saveEntry = () => {
-    if(!currentUser) return alert('Pela Login karo');
+    if(!currentUser) return alert('Connecting...');
     const type = document.getElementById('type').value;
     const amt = parseFloat(document.getElementById('amount').value) || 0;
     if(!amt) return alert('Amount nakho');
@@ -276,11 +248,6 @@
     const a = document.createElement('a');
     a.href = url; a.download = 'RokadLedger.csv'; a.click();
   }
-
-  window.exportPDF = () => alert('PDF function same raheshe');
-  window.showPartyLedger = () => alert('Party Ledger function same raheshe');
-  window.showFullReport = () => alert('Full Report function same raheshe');
-  window.closeModal = () => document.getElementById('reportModal').style.display = 'none';
 
 </script>
 </body>
