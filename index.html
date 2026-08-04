@@ -28,11 +28,15 @@
 .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; transition: all 0.3s; }
 .main-grid.full { grid-template-columns: 1fr; }
 .main-grid.full >.panel:first-child { display: none; }
-    @media (max-width: 768px) {.main-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+     .main-grid { grid-template-columns: 1fr; }
+     .form-grid { grid-template-columns: 1fr 1fr!important; } /* Mobile 2 column */
+    }
+.form-grid { display:grid;grid-template-columns:1fr;gap:6px; }
 .panel { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .panel h3 { font-size: 14px; margin-bottom: 10px; color: #334155; }
-    label { display: block; font-size: 12px; margin-top: 8px; margin-bottom: 3px; font-weight: 600; color: #475569; }
-    input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+    label { display: block; font-size: 12px; margin-top: 4px; margin-bottom: 2px; font-weight: 600; color: #475569; }
+    input, select { width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
 .btn-save { width: 100%; background: #059669; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; margin-top: 12px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
@@ -84,12 +88,14 @@
   <div class="main-grid" id="mainGrid">
     <div class="panel">
       <h3>New Entry</h3>
-      <input type="date" id="date">
-      <label>Type</label><select id="type"><option>Rokad</option><option>GPay</option></select>
-      <label>Aavak/Javak</label><select id="aavakjavak"><option>Aavak</option><option>Javak</option></select>
-      <label>Vehicle</label><input list="vehicles" id="vehicle"><datalist id="vehicles"><option>Tractor</option><option>JCB</option><option>Machine</option><option>Farm</option><option>Any</option></datalist>
-      <label>Amount ₹</label><input type="number" id="amount">
-      <label>Party</label><input type="text" id="party">
+      <div class="form-grid">
+        <div><label>Date</label><input type="date" id="date"></div>
+        <div><label>Type</label><select id="type"><option>Rokad</option><option>GPay</option></select></div>
+        <div><label>A/J</label><select id="aavakjavak"><option>Aavak</option><option>Javak</option></select></div>
+        <div><label>Vehicle</label><input list="vehicles" id="vehicle"><datalist id="vehicles"><option>Tractor</option><option>JCB</option><option>Machine</option><option>Farm</option><option>Any</option></datalist></div>
+        <div><label>Amount ₹</label><input type="number" id="amount"></div>
+        <div><label>Party</label><input type="text" id="party"></div>
+      </div>
       <label>Details</label><input type="text" id="details">
       <button class="btn-save" onclick="saveEntry()">SAVE ENTRY</button>
     </div>
@@ -129,6 +135,13 @@
   let editId = null;
   let isFullScreen = false;
   document.getElementById('date').valueAsDate = new Date();
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`; // 4-8-2026 format
+  }
 
   signInAnonymously(auth).catch((error) => {
     document.getElementById('status').textContent = " Error: "+error.message;
@@ -170,7 +183,8 @@
       amount: amt,
       party: document.getElementById('party').value,
       details: document.getElementById('details').value,
-      userId: currentUser.uid
+      userId: currentUser.uid,
+      timestamp: Date.now() // sequence mate
     };
 
     if (editId) {
@@ -204,7 +218,7 @@
       if (d1 && d.date < d1) match = false;
       if (d2 && d.date > d2) match = false;
       return match;
-    }).sort((a,b)=> new Date(a.date)-new Date(b.date));
+    }).sort((a,b)=> b.timestamp - a.timestamp); // Nava upar
   }
 
   window.renderTable = () => {
@@ -214,10 +228,9 @@
     tbody.innerHTML = filtered.map((d, i) => {
       if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
       else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
-      return `<tr><td>${i+1}</td><td>${d.date}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td><td><button class="action-btn edit" onclick="editEntry('${d.id}')">E</button><button class="action-btn del" onclick="delEntry('${d.id}')">D</button></td></tr>`;
+      return `<tr><td>${i+1}</td><td>${formatDate(d.date)}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td><td><button class="action-btn edit" onclick="editEntry('${d.id}')">E</button><button class="action-btn del" onclick="delEntry('${d.id}')">D</button></td></tr>`;
     }).join('');
 
-    // AA LINE ADD KARI - Niche Total
     if(filtered.length > 0) {
       tbody.innerHTML += `
         <tr style="background:#fef3c7;font-weight:bold;">
@@ -290,7 +303,7 @@
     let filtered = getFilteredData();
     let csv = 'Date,Type,A/J,Vehicle,Rokad,GPay,Total,Party,Details\n';
     filtered.forEach(d => {
-      csv += `${d.date},${d.type},${d.aavakjavak},${d.vehicleType},${d.rokadAmount},${d.gpayAmount},${d.amount},${d.party},${d.details}\n`;
+      csv += `${formatDate(d.date)},${d.type},${d.aavakjavak},${d.vehicleType},${d.rokadAmount},${d.gpayAmount},${d.amount},${d.party},${d.details}\n`;
     });
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
@@ -298,7 +311,25 @@
     a.href = url; a.download = 'RokadLedger.csv'; a.click();
   }
 
-  window.exportPDF = () => { alert('PDF pachhi banavsu'); }
+  // PDF FIX
+  window.exportPDF = () => {
+    let filtered = getFilteredData();
+    let ra=0, rj=0, ga=0, gj=0;
+    filtered.forEach(d => {
+      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+      else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+    });
+    let html = `<div style="padding:20px;font-family:Arial;"><h2 style="text-align:center;">ROKAD & GPAY LEDGER</h2><p>Total Entries: ${filtered.length}</p><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#334155;color:white;"><th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Vehicle</th><th>Rokad</th><th>GPay</th><th>Total</th><th>Party</th><th>Details</th></tr></thead><tbody>`;
+    filtered.forEach((d,i) => {
+      html += `<tr><td>${i+1}</td><td>${formatDate(d.date)}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td></tr>`;
+    });
+    html += `<tr style="background:#fef3c7;font-weight:bold;"><td colspan="5">AAVAK TOTAL</td><td>${ra.toFixed(2)}</td><td>${ga.toFixed(2)}</td><td>${(ra+ga).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `<tr style="background:#fee2e2;font-weight:bold;"><td colspan="5">JAVAK TOTAL</td><td>${rj.toFixed(2)}</td><td>${gj.toFixed(2)}</td><td>${(rj+gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `<tr style="background:#d1fae5;font-weight:bold;color:#059669;"><td colspan="5">BALANCE</td><td>${(ra-rj).toFixed(2)}</td><td>${(ga-gj).toFixed(2)}</td><td>${(ra-rj+ga-gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `</tbody></table></div>`;
+    const opt = { margin: 10, filename: 'RokadLedger.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
+    html2pdf().set(opt).from(html).save();
+  }
 
   window.exportBackup = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
@@ -315,6 +346,7 @@
       const importedData = JSON.parse(e.target.result);
       importedData.forEach(item => {
         item.userId = currentUser.uid;
+        item.timestamp = Date.now();
         delete item.id;
         push(ref(db, 'data'), item);
       });
@@ -348,7 +380,8 @@
           gpayAmount: type === 'GPay'? amt : 0,
           party: item['Party Name'] || item.party || '',
           details: item.Details || item.details || '',
-          userId: currentUser.uid
+          userId: currentUser.uid,
+          timestamp: Date.now()
         };
         if(newItem.amount > 0) { push(ref(db, 'data'), newItem); count++; }
       });
@@ -363,7 +396,6 @@
     }
   }
 
-  // FIX: FULL REPORT
   window.showFullReport = () => {
     let filtered = getFilteredData();
     if(filtered.length === 0) return alert('Koi data nathi');
@@ -374,7 +406,7 @@
     });
     let html = `<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#334155;color:white;"><th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Vehicle</th><th>Rokad</th><th>GPay</th><th>Total</th><th>Party</th><th>Details</th></tr></thead><tbody>`;
     filtered.forEach((d,i) => {
-      html += `<tr><td>${i+1}</td><td>${d.date}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td></tr>`;
+      html += `<tr><td>${i+1}</td><td>${formatDate(d.date)}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td></tr>`;
     });
     html += `<tr style="background:#fef3c7;font-weight:bold;"><td colspan="5">AAVAK TOTAL</td><td>${ra.toFixed(2)}</td><td>${ga.toFixed(2)}</td><td>${(ra+ga).toFixed(2)}</td><td colspan="2"></td></tr>`;
     html += `<tr style="background:#fee2e2;font-weight:bold;"><td colspan="5">JAVAK TOTAL</td><td>${rj.toFixed(2)}</td><td>${gj.toFixed(2)}</td><td>${(rj+gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
@@ -385,7 +417,6 @@
     document.getElementById('reportModal').style.display = 'block';
   }
 
-  // FIX: PARTY LEDGER
   window.showPartyLedger = () => {
     const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
     if(parties.length === 0) return alert('Koi party nathi');
