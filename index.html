@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ROKAD & GPAY LEDGER</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e293b">
-  <link rel="icon" href="icon-192.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -101,7 +98,7 @@
       <div class="table-wrap">
         <table><thead><tr><th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Vehicle</th><th>Rokad</th><th>GPay</th><th>Total</th><th>Party</th><th>Details</th><th>Action</th></tr></thead><tbody id="dataTable"></tbody></table>
       </div>
-      <div>Total: <span id="entryCount">0</span> entries</div>
+      <div style="font-size: 11px; margin-top: 6px;">Total: <span id="entryCount">0</span> entries</div>
     </div>
   </div>
   </div>
@@ -219,6 +216,33 @@
       else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
       return `<tr><td>${i+1}</td><td>${d.date}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td><td><button class="action-btn edit" onclick="editEntry('${d.id}')">E</button><button class="action-btn del" onclick="delEntry('${d.id}')">D</button></td></tr>`;
     }).join('');
+
+    // AA LINE ADD KARI - Niche Total
+    if(filtered.length > 0) {
+      tbody.innerHTML += `
+        <tr style="background:#fef3c7;font-weight:bold;">
+          <td colspan="5" style="text-align:right;">AAVAK TOTAL</td>
+          <td>${ra.toFixed(2)}</td>
+          <td>${ga.toFixed(2)}</td>
+          <td>${(ra+ga).toFixed(2)}</td>
+          <td colspan="3"></td>
+        </tr>
+        <tr style="background:#fee2e2;font-weight:bold;">
+          <td colspan="5" style="text-align:right;">JAVAK TOTAL</td>
+          <td>${rj.toFixed(2)}</td>
+          <td>${gj.toFixed(2)}</td>
+          <td>${(rj+gj).toFixed(2)}</td>
+          <td colspan="3"></td>
+        </tr>
+        <tr style="background:#d1fae5;font-weight:bold;color:#059669;">
+          <td colspan="5" style="text-align:right;">BALANCE</td>
+          <td>${(ra-rj).toFixed(2)}</td>
+          <td>${(ga-gj).toFixed(2)}</td>
+          <td>${(ra-rj+ga-gj).toFixed(2)}</td>
+          <td colspan="3"></td>
+        </tr>`;
+    }
+
     updateTotals(); updatePartyList(); document.getElementById('entryCount').textContent = filtered.length;
   }
 
@@ -274,9 +298,8 @@
     a.href = url; a.download = 'RokadLedger.csv'; a.click();
   }
 
-  window.exportPDF = () => { alert('PDF feature Firebase wali version ma pachhi add karisu'); }
+  window.exportPDF = () => { alert('PDF pachhi banavsu'); }
 
-  // NEW BACKUP
   window.exportBackup = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
@@ -284,7 +307,6 @@
     a.href = url; a.download = 'RokadBackup_'+new Date().toISOString().split('T')[0]+'.json'; a.click();
   }
 
-  // NEW IMPORT
   window.importBackup = (event) => {
     const file = event.target.files[0];
     if(!file) return;
@@ -301,7 +323,6 @@
     reader.readAsText(file);
   }
 
-  // JUNO FORMAT IMPORT
   window.importOldBackup = (event) => {
     const file = event.target.files[0];
     if(!file) return;
@@ -314,11 +335,9 @@
         let type = (item.Type || item.type || 'Rokad').toString();
         if(type=='Bank'||type=='Bane'||type=='CASH') type='Rokad';
         if(type=='GPAY'||type=='UPI') type='GPay';
-
         let aj = (item['Aavak/Javak'] || item.aavakjavak || 'Aavak').toString();
         if(aj=='In'||aj=='income') aj='Aavak';
         if(aj=='Out'||aj=='expense') aj='Javak';
-
         const newItem = {
           date: item.Date || item.date,
           type: type,
@@ -344,8 +363,50 @@
     }
   }
 
-  window.showPartyLedger = () => { alert('Party Ledger report Firebase sathe ready che'); }
-  window.showFullReport = () => { alert('Full Report Firebase sathe ready che'); }
+  // FIX: FULL REPORT
+  window.showFullReport = () => {
+    let filtered = getFilteredData();
+    if(filtered.length === 0) return alert('Koi data nathi');
+    let ra=0, rj=0, ga=0, gj=0;
+    filtered.forEach(d => {
+      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+      else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+    });
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#334155;color:white;"><th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Vehicle</th><th>Rokad</th><th>GPay</th><th>Total</th><th>Party</th><th>Details</th></tr></thead><tbody>`;
+    filtered.forEach((d,i) => {
+      html += `<tr><td>${i+1}</td><td>${d.date}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td><td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td></tr>`;
+    });
+    html += `<tr style="background:#fef3c7;font-weight:bold;"><td colspan="5">AAVAK TOTAL</td><td>${ra.toFixed(2)}</td><td>${ga.toFixed(2)}</td><td>${(ra+ga).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `<tr style="background:#fee2e2;font-weight:bold;"><td colspan="5">JAVAK TOTAL</td><td>${rj.toFixed(2)}</td><td>${gj.toFixed(2)}</td><td>${(rj+gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `<tr style="background:#d1fae5;font-weight:bold;color:#059669;"><td colspan="5">BALANCE</td><td>${(ra-rj).toFixed(2)}</td><td>${(ga-gj).toFixed(2)}</td><td>${(ra-rj+ga-gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `</tbody></table><button style="background:#10b981;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;" onclick="window.print()">Print</button>`;
+    document.getElementById('modalTitle').textContent = 'Full Report';
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('reportModal').style.display = 'block';
+  }
+
+  // FIX: PARTY LEDGER
+  window.showPartyLedger = () => {
+    const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
+    if(parties.length === 0) return alert('Koi party nathi');
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:14px;"><thead><tr style="background:#334155;color:white;"><th>Party Name</th><th>Rokad Aavak</th><th>Rokad Javak</th><th>GPay Aavak</th><th>GPay Javak</th><th>Balance</th></tr></thead><tbody>`;
+    parties.forEach(party => {
+      let ra=0, rj=0, ga=0, gj=0;
+      data.forEach(d => {
+        if(d.party === party) {
+          if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+          else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+        }
+      });
+      const bal = (ra-rj)+(ga-gj);
+      html += `<tr><td>${party}</td><td>${ra.toFixed(2)}</td><td>${rj.toFixed(2)}</td><td>${ga.toFixed(2)}</td><td>${gj.toFixed(2)}</td><td style="font-weight:bold;color:${bal>=0?'#059669':'#dc2626'};">${bal.toFixed(2)}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById('modalTitle').textContent = 'Party Ledger';
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('reportModal').style.display = 'block';
+  }
+
   window.closeModal = () => { document.getElementById('reportModal').style.display = 'none'; }
 
 </script>
