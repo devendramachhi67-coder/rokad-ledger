@@ -167,7 +167,7 @@
     if(!currentUser) return alert('Connecting...');
     const type = document.getElementById('type').value;
     const amt = parseFloat(document.getElementById('amount').value) || 0;
-    if(!amt) return alert('Amount nakho');
+    if(!amt) return alert('Amount નાખો');
 
     const entry = {
       date: document.getElementById('date').value,
@@ -214,7 +214,7 @@
       if (d1 && d.date < d1) match = false;
       if (d2 && d.date > d2) match = false;
       return match;
-    }).sort((a,b)=> new Date(b.date) - new Date(a.date) || b.timestamp - a.timestamp); // DATE WISE + NAVA UPAR
+    }).sort((a,b)=> new Date(a.date) - new Date(b.date) || a.timestamp - b.timestamp); // તારીખ વાઈઝ 1,2,3
   }
 
   window.renderTable = () => {
@@ -268,7 +268,7 @@
   }
 
   window.delEntry = (id) => {
-    if (confirm('Delete karvu che?')) {
+    if (confirm('Delete કરવું છે?')) {
       remove(ref(db, 'data/' + id));
     }
   }
@@ -290,8 +290,8 @@
     document.getElementById('partyList').innerHTML = parties.map(p => `<option value="${p}">`).join('');
   }
 
-  function updateDetailsList() { // DETAILS SUGGESTION
-    const details = [...new Set(data.map(d => d.details).filter(Boolean))];
+  function updateDetailsList() { // DETAILS SUGGESTION FIX
+    const details = [...new Set(data.map(d => d.details).filter(Boolean))].sort();
     document.getElementById('detailsList').innerHTML = details.map(d => `<option value="${d}">`).join('');
   }
 
@@ -371,7 +371,7 @@
         delete item.id;
         push(ref(db, 'data'), item);
       });
-      alert(importedData.length + ' entries import thai gai');
+      alert(importedData.length + ' entries import થઈ ગઈ');
     };
     reader.readAsText(file);
   }
@@ -398,7 +398,7 @@
           vehicleType: item['Vehicle Type'] || item.vehicleType || '',
           amount: amt,
           rokadAmount: type === 'Rokad'? amt : 0,
-          gpayAmount: pe === 'GPay'? amt : 0,
+          gpayAmount: type === 'GPay'? amt : 0,
           party: item['Party Name'] || item.party || '',
           details: item.Details || item.details || '',
           userId: currentUser.uid,
@@ -406,20 +406,20 @@
         };
         if(newItem.amount > 0) { push(ref(db, 'data'), newItem); count++; }
       });
-      alert(count + ' juna entries import thai gai ✅');
+      alert(count + ' જૂની entries import થઈ ગઈ ✅');
     };
     reader.readAsText(file);
   }
 
   window.clearAll = () => {
-    if(confirm('Badhu data delete karvu che?')) {
+    if(confirm('બધું data delete કરવું છે?')) {
       data.forEach(d => remove(ref(db, 'data/' + d.id)));
     }
   }
 
   window.showFullReport = () => {
     let filtered = getFilteredData();
-    if(filtered.length === 0) return alert('Koi data nathi');
+    if(filtered.length === 0) return alert('કોઈ data નથી');
     let ra=0, rj=0, ga=0, gj=0;
     filtered.forEach(d => {
       if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
@@ -446,7 +446,7 @@
 
   window.showPartyLedger = () => {
     const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
-    if(parties.length === 0) return alert('Koi party nathi');
+    if(parties.length === 0) return alert('કોઈ party નથી');
     let html = `<table style="width:100%;border-collapse:collapse;font-size:14px;"><thead><tr style="background:#334155;color:white;"><th>Party Name</th><th>Rokad Aavak</th><th>Rokad Javak</th><th>GPay Aavak</th><th>GPay Javak</th><th>Balance</th></tr></thead><tbody>`;
     parties.forEach(party => {
       let ra=0, rj=0, ga=0, gj=0;
