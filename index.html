@@ -91,7 +91,8 @@
       <label>5. Amount ₹</label><input type="number" id="amount">
       <label>6. Party Name</label><input list="partyList" id="party" placeholder="Type to see suggestions">
       <datalist id="partyList"></datalist>
-      <label>7. Details</label><input type="text" id="details">
+      <label>7. Details</label><input list="detailsList" id="details" placeholder="Type to see suggestions">
+      <datalist id="detailsList"></datalist>
       <button class="btn-save" onclick="saveEntry()">SAVE ENTRY</button>
     </div>
 
@@ -213,7 +214,7 @@
       if (d1 && d.date < d1) match = false;
       if (d2 && d.date > d2) match = false;
       return match;
-    }).sort((a,b)=> b.timestamp - a.timestamp);
+    }).sort((a,b)=> new Date(b.date) - new Date(a.date) || b.timestamp - a.timestamp); // DATE WISE + NAVA UPAR
   }
 
   window.renderTable = () => {
@@ -251,7 +252,7 @@
         </tr>`;
     }
 
-    updateTotals(); updatePartyList(); document.getElementById('entryCount').textContent = filtered.length;
+    updateTotals(); updatePartyList(); updateDetailsList(); document.getElementById('entryCount').textContent = filtered.length;
   }
 
   window.editEntry = (id) => {
@@ -286,7 +287,12 @@
   function updatePartyList() {
     const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
     document.getElementById('filterParty').innerHTML = '<option value="">All Party</option>' + parties.map(p => `<option>${p}</option>`).join('');
-    document.getElementById('partyList').innerHTML = parties.map(p => `<option value="${p}">`).join(''); // AUTOCOMPLETE
+    document.getElementById('partyList').innerHTML = parties.map(p => `<option value="${p}">`).join('');
+  }
+
+  function updateDetailsList() { // DETAILS SUGGESTION
+    const details = [...new Set(data.map(d => d.details).filter(Boolean))];
+    document.getElementById('detailsList').innerHTML = details.map(d => `<option value="${d}">`).join('');
   }
 
   window.toggleScreen = () => {
@@ -307,7 +313,6 @@
     a.href = url; a.download = 'RokadLedger.csv'; a.click();
   }
 
-  // PDF FIX - PAGE BREAK
   window.exportPDF = () => {
     let filtered = getFilteredData();
     let ra=0, rj=0, ga=0, gj=0;
@@ -323,7 +328,7 @@
     <th style="border:1px solid #000;padding:5px;">A/J</th><th style="border:1px solid #000;padding:5px;">Vehicle</th><th style="border:1px solid #000;padding:5px;">Rokad</th>
     <th style="border:1px solid #000;padding:5px;">GPay</th><th style="border:1px solid #000;padding:5px;">Total</th><th style="border:1px solid #000;padding:5px;">Party</th><th style="border:1px solid #000;padding:5px;">Details</th>
     </tr></thead><tbody>`;
-    
+
     filtered.forEach((d,i) => {
       html += `<tr style="page-break-inside:avoid;">
       <td style="border:1px solid #000;padding:5px;">${i+1}</td>
@@ -337,12 +342,12 @@
       <td style="border:1px solid #000;padding:5px;">${d.party}</td>
       <td style="border:1px solid #000;padding:5px;">${d.details}</td></tr>`;
     });
-    
+
     html += `<tr style="background:#fef3c7;font-weight:bold;"><td colspan="5" style="border:1px solid #000;padding:5px;">AAVAK TOTAL</td><td style="border:1px solid #000;padding:5px;">${ra.toFixed(2)}</td><td style="border:1px solid #000;padding:5px;">${ga.toFixed(2)}</td><td style="border:1px solid #000;padding:5px;">${(ra+ga).toFixed(2)}</td><td colspan="2" style="border:1px solid #000;padding:5px;"></td></tr>`;
     html += `<tr style="background:#fee2e2;font-weight:bold;"><td colspan="5" style="border:1px solid #000;padding:5px;">JAVAK TOTAL</td><td style="border:1px solid #000;padding:5px;">${rj.toFixed(2)}</td><td style="border:1px solid #000;padding:5px;">${gj.toFixed(2)}</td><td style="border:1px solid #000;padding:5px;">${(rj+gj).toFixed(2)}</td><td colspan="2" style="border:1px solid #000;padding:5px;"></td></tr>`;
     html += `<tr style="background:#d1fae5;font-weight:bold;color:#059669;"><td colspan="5" style="border:1px solid #000;padding:5px;">BALANCE</td><td style="border:1px solid #000;padding:5px;">${(ra-rj).toFixed(2)}</td><td style="border:1px solid #000;padding:5px;">${(ga-gj).toFixed(2)}</td><td style="border:1px solid #000;padding:5px;">${(ra-rj+ga-gj).toFixed(2)}</td><td colspan="2" style="border:1px solid #000;padding:5px;"></td></tr>`;
     html += `</tbody></table></div>`;
-    
+
     const opt = { margin: 10, filename: 'RokadLedger.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
     html2pdf().set(opt).from(html).save();
   }
@@ -393,7 +398,7 @@
           vehicleType: item['Vehicle Type'] || item.vehicleType || '',
           amount: amt,
           rokadAmount: type === 'Rokad'? amt : 0,
-          gpayAmount: type === 'GPay'? amt : 0,
+          gpayAmount: pe === 'GPay'? amt : 0,
           party: item['Party Name'] || item.party || '',
           details: item.Details || item.details || '',
           userId: currentUser.uid,
