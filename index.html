@@ -381,4 +381,92 @@
     if(!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      const o
+      const oldData = JSON.parse(e.target.result);
+      let count = 0;
+      oldData.forEach(item => {
+        const amt = parseFloat(item.Amount || item.amount || 0);
+        let type = (item.Type || item.type || 'Rokad').toString();
+        if(type=='Bank'||type=='Bane'||type=='CASH') type='Rokad';
+        if(type=='GPAY'||type=='UPI') type='GPay';
+        let aj = (item['Aavak/Javak'] || item.aavakjavak || 'Aavak').toString();
+        if(aj=='In'||aj=='income') aj='Aavak';
+        if(aj=='Out'||aj=='expense') aj='Javak';
+        const newItem = {
+          date: item.Date || item.date,
+          type: type,
+          aavakjavak: aj,
+          vehicleType: item['Vehicle Type'] || item.vehicleType || '',
+          amount: amt,
+          rokadAmount: type === 'Rokad'? amt : 0,
+          gpayAmount: type === 'GPay'? amt : 0,
+          party: item['Party Name'] || item.party || '',
+          details: item.Details || item.details || '',
+          userId: currentUser.uid,
+          timestamp: Date.now()
+        };
+        if(newItem.amount > 0) { push(ref(db, 'data'), newItem); count++; }
+      });
+      alert(count + ' જૂની entries import થઈ ગઈ ✅');
+    };
+    reader.readAsText(file);
+  }
+
+  window.clearAll = () => {
+    if(confirm('બધું data delete કરવું છે?')) {
+      data.forEach(d => remove(ref(db, 'data/' + d.id)));
+    }
+  }
+
+  window.showFullReport = () => {
+    let filtered = getFilteredData();
+    if(filtered.length === 0) return alert('કોઈ data નથી');
+    let ra=0, rj=0, ga=0, gj=0;
+    filtered.forEach(d => {
+      if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+      else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+    });
+    let html = `<div style="font-family:Arial;">
+    <h2 style="text-align:center;">ROKAD & GPAY LEDGER</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+    <thead style="display:table-header-group;"><tr style="background:#334155;color:white;">
+    <th>Sr</th><th>Date</th><th>Type</th><th>A/J</th><th>Vehicle</th><th>Rokad</th><th>GPay</th><th>Total</th><th>Party</th><th>Details</th></tr></thead><tbody>`;
+    filtered.forEach((d,i) => {
+      html += `<tr style="page-break-inside:avoid;">
+      <td>${i+1}</td><td>${formatDate(d.date)}</td><td>${d.type}</td><td>${d.aavakjavak}</td><td>${d.vehicleType}</td>
+      <td>${(d.rokadAmount||0).toFixed(2)}</td><td>${(d.gpayAmount||0).toFixed(2)}</td><td>${(d.amount||0).toFixed(2)}</td><td>${d.party}</td><td>${d.details}</td></tr>`;
+    });
+    html += `<tr style="background:#fef3c7;font-weight:bold;"><td colspan="5">AAVAK TOTAL</td><td>${ra.toFixed(2)}</td><td>${ga.toFixed(2)}</td><td>${(ra+ga).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `<tr style="background:#fee2e2;font-weight:bold;"><td colspan="5">JAVAK TOTAL</td><td>${rj.toFixed(2)}</td><td>${gj.toFixed(2)}</td><td>${(rj+gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `<tr style="background:#d1fae5;font-weight:bold;color:#059669;"><td colspan="5">BALANCE</td><td>${(ra-rj).toFixed(2)}</td><td>${(ga-gj).toFixed(2)}</td><td>${(ra-rj+ga-gj).toFixed(2)}</td><td colspan="2"></td></tr>`;
+    html += `</tbody></table><button style="background:#10b981;color:white;padding:10px 20px;border:none;border-radius:6px;margin-top:15px;cursor:pointer;" onclick="window.print()">Print</button></div>`;
+    document.getElementById('modalTitle').textContent = 'Full Report';
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('reportModal').style.display = 'block';
+  }
+
+  window.showPartyLedger = () => {
+    const parties = [...new Set(data.map(d => d.party).filter(Boolean))];
+    if(parties.length === 0) return alert('કોઈ party નથી');
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:14px;"><thead><tr style="background:#334155;color:white;"><th>Party Name</th><th>Rokad Aavak</th><th>Rokad Javak</th><th>GPay Aavak</th><th>GPay Javak</th><th>Balance</th></tr></thead><tbody>`;
+    parties.forEach(party => {
+      let ra=0, rj=0, ga=0, gj=0;
+      data.forEach(d => {
+        if(d.party === party) {
+          if(d.aavakjavak==='Aavak') { ra+=d.rokadAmount||0; ga+=d.gpayAmount||0; }
+          else { rj+=d.rokadAmount||0; gj+=d.gpayAmount||0; }
+        }
+      });
+      const bal = (ra-rj)+(ga-gj);
+      html += `<tr><td>${party}</td><td>${ra.toFixed(2)}</td><td>${rj.toFixed(2)}</td><td>${ga.toFixed(2)}</td><td>${gj.toFixed(2)}</td><td style="font-weight:bold;color:${bal>=0?'#059669':'#dc2626'};">${bal.toFixed(2)}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById('modalTitle').textContent = 'Party Ledger';
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('reportModal').style.display = 'block';
+  }
+
+  window.closeModal = () => { document.getElementById('reportModal').style.display = 'none'; }
+
+</script>
+</body>
+</html>
